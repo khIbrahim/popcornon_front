@@ -1,27 +1,30 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import type {ReactNode} from "react";
 
-interface Props {
+interface ProtectedRouteProps {
+    children: ReactNode;
     roles?: string[];
-    redirectTo?: string;
 }
 
-export default function ProtectedRoute({ roles, redirectTo = "/auth" }: Props) {
-    const { user, isLoading } = useAuth();
+export default function ProtectedRoute({ children, roles }: ProtectedRouteProps) {
+    const { isLoading, user } = useAuth();
 
     if (isLoading) {
-        return <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-        </div>;
+        return (
+            <div className="flex items-center justify-center h-screen text-white">
+                Chargement...
+            </div>
+        );
     }
 
     if (! user) {
-        return <Navigate to={redirectTo} replace />;
+        return <Navigate to="/auth" replace />;
     }
 
     if (roles && ! roles.includes(user.role)) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/auth" replace />;
     }
 
-    return <Outlet />;
+    return <>{children}</>;
 }

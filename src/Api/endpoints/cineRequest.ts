@@ -6,40 +6,39 @@ export async function getCineStatus(): Promise<CineStatusResponse> {
     return res.data;
 }
 
-export async function createCineRequest({
-    cinemaName,
-    address,
-    phone,
-    email,
-    motivation
-}: CineRequestI): Promise<CineStatusResponse> {
+export async function createCineRequest(payload: CineRequestI): Promise<{
+    success: boolean;
+    status: string;
+    message: string;
+    errors: any[];
+    data: null;
+}> {
     try {
-        const res = await axiosConfig.post<CineStatusResponse>("/cine-request", {
-            cinemaName,
-            address,
-            phone,
-            email,
-            motivation
-        });
-
+        const res = await axiosConfig.post<CineStatusResponse>("/cine-request", payload);
         return res.data;
     } catch (error: any) {
         if (error.response) {
+            const backend = error.response.data;
+
             return {
                 success: false,
                 status: "none",
-                data: error.response.data || null,
+                message: backend.message || "Validation failed",
+                errors: backend.errors || [],
+                data: null
             };
         }
 
         return {
             success: false,
             status: "none",
-            data: null,
+            message: "Erreur de connexion au serveur",
+            errors: [],
+            data: null
         };
     }
-
 }
+
 
 export async function getAllCineRequests(status?: string): Promise<CineStatusResponse & { data: CineRequestI[] }> {
     const url = status ? `/cine-request?status=${status}` : "/cine-request";

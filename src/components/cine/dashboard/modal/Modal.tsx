@@ -24,7 +24,7 @@ const Modal = ({
                     <h2 className="text-lg font-semibold text-slate-50">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="rounded-full p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+                        className="rounded-full p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-100 cursor-pointer"
                     >
                         <X size={18}/>
                     </button>

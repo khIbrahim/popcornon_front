@@ -1,6 +1,6 @@
 import { z, type MyZodType } from "../config/defaultZod.ts";
 import { mongodbIdSchema } from "./elements.ts";
-import type { BasicUserI, LoginUserI, RegisterUserI, UserI } from "../types/models/user.ts";
+import type { BasicUserI, LoginUserI, RegisterUserI, UserI } from "../types/user.ts";
 
 export const passwordSchema = z
     .string()

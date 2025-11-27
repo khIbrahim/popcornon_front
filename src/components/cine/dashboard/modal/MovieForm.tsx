@@ -13,15 +13,15 @@ import {
     type MovieFormData,
     type MovieStatus
 } from "../../../../types/movie.ts";
+import {useCinema} from "../../../../context/CinemaContext.tsx";
 
 interface MovieFormProps {
     initial?: Movie;
     onCancel: () => void;
-    onSubmit: (movie: Movie) => void;
+    onSubmit: (movie: Omit<Movie, "_id">) => void;
     isLoading?: boolean;
+    defaultDate?: string;
 }
-
-const HALLS = ['Salle 1', 'Salle 2', 'Salle 3', 'Salle VIP', 'Salle IMAX', 'Salle 3D'];
 
 const STATUS_OPTIONS: { value: MovieStatus; label: string }[] = [
     { value: 'draft', label: '📝 Brouillon' },
@@ -29,15 +29,16 @@ const STATUS_OPTIONS: { value: MovieStatus; label: string }[] = [
     { value: 'archived', label: '📦 Archivé' },
 ];
 
-const MovieForm = ({ initial, onCancel, onSubmit, isLoading }: MovieFormProps) => {
-    // Film sélectionné via TMDB (ou initial en mode edit)
+const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: MovieFormProps) => {
     const [selectedMovie, setSelectedMovie] = useState<TMDBMovie | null>(null);
 
+    const {halls} = useCinema();
+    const hallOptions = halls.map(h => h.name);
     const [price, setPrice] = useState(initial?.price?.toString() ?? '800');
-    const [date, setDate] = useState(initial?.date ?? '');
     const [time, setTime] = useState(initial?.time ?? '');
-    const [hall, setHall] = useState(initial?.hall ?? HALLS[0]);
+    const [hall, setHall] = useState(initial?.hall ?? 'Chargement');
     const [status, setStatus] = useState<MovieStatus>(initial?.status ?? 'draft');
+    const [date, setDate] = useState(initial?.date ?? defaultDate ?? '');
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -144,14 +145,18 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading }: MovieFormProps) =
                                 Salle
                             </label>
                             <Select value={hall} onChange={(e) => setHall(e.target.value)}>
-                                {HALLS.map((h) => (
-                                    <option key={h} value={h}>{h}</option>
-                                ))}
+                                {hallOptions.length > 0 ?  (
+                                    hallOptions.map((h) => (
+                                        <option key={h} value={h}>{h}</option>
+                                    ))
+                                ) : (
+                                    <option value="">Aucune salle configurée</option>
+                                )}
                             </Select>
                         </div>
                     </div>
 
-                    {/* Ligne 2: Date + Heure + Statut */}
+                    {/* Ligne 2 : Date + Heure + Statut */}
                     <div className="grid gap-4 sm:grid-cols-3">
                         <div className="space-y-1.5">
                             <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">

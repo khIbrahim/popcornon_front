@@ -85,10 +85,13 @@ const RegisterForm: React.FC<Props> = ({
                     text: "Inscription réussie !"
                 });
             } else {
-                const errorMsg =
-                    res.errors?.[0]?.message ||
-                    res.message ||
-                    "Une erreur est survenue.";
+                let errorMsg = "Une erreur est survenue.";
+
+                if ('errors' in res && Array.isArray(res.errors) && res.errors.length > 0) {
+                    errorMsg = res.errors[0]?.message || res.message || errorMsg;
+                } else if ('message' in res) {
+                    errorMsg = res.message;
+                }
 
                 onRegisterFailure({
                     type: "error",
@@ -145,7 +148,8 @@ const RegisterForm: React.FC<Props> = ({
                     name="phone"
                     type="tel"
                     className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:outline-none"
-                    placeholder="+33 6 12 34 56 78"
+                    // placeholder="+33 6 12 34 56 78"
+                    placeholder="0 XXX XXX XXX"
                 />
             </div>
 
@@ -216,7 +220,7 @@ const RegisterForm: React.FC<Props> = ({
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-lg transition"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-lg transition cursor-pointer"
             >
                 {isLoading ? "Chargement..." : "Créer mon compte"}
             </button>

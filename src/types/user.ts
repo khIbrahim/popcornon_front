@@ -38,6 +38,8 @@ export interface BasicUserI {
   lastLoginAt?: string | null;
   lastLoginIP?: string | null;
 
+  cinemaId?: string;
+
   createdAt: string;
   updatedAt: string;
 }

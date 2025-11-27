@@ -8,7 +8,7 @@ const Footer = () => (
                 <div className="col-span-1 md:col-span-1">
                     <div className="flex items-center mb-4">
                         <Film className="h-8 w-8 text-red-500" />
-                        <span className="ml-2 text-xl font-bold text-white">Ciné<span className="text-red-500">Dz</span></span>
+                        <span className="ml-2 text-xl font-bold text-white">Popcorn<span className="text-red-500">ON</span></span>
                     </div>
                     <p className="text-gray-400 text-sm">
                         La première plateforme de réservation de cinéma en Algérie. Vivez le cinéma autrement.
@@ -45,7 +45,7 @@ const Footer = () => (
 
             <div className="border-t border-slate-800 pt-8 text-center">
                 <p className="text-gray-500 text-sm">
-                    &copy; {new Date().getFullYear()} CinéDz Algérie. Tous droits réservés.
+                    &copy; {new Date().getFullYear()} PopcornON Algérie. Tous droits réservés.
                 </p>
             </div>
         </div>

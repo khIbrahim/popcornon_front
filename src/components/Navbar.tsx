@@ -6,7 +6,6 @@ import {
     X,
     LogOut,
     Settings,
-    LayoutDashboard,
     Ticket,
     Building2
 } from "lucide-react";
@@ -40,14 +39,12 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
 
     const navLinks = [
         { label: "Home", href: "/" },
-        { label: "Films", href: "/films" },
+        { label: "Films", href: "/movies" },
         { label: "Cinémas", href: "/cinemas" },
-        { label: "Réserver", href: "/booking" },
         { label: "Devenir Partenaire", href: "/become-partner" },
     ];
 
     const handleLogout = () => {
-        console.log("Logging out...");
         try {
             logout();
 
@@ -84,7 +81,7 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setShowDropdown((v) => !v)}
-                                className="flex items-center gap-2 group"
+                                className="flex items-center gap-2 group card cursor-pointer"
                             >
                 <span className="text-sm text-gray-300 font-medium">
                   Bonjour, {user.firstName}
@@ -113,7 +110,7 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
                                     <ul className="py-1 text-sm text-slate-200">
                                         <li>
                                             <button
-                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition"
+                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition cursor-pointer"
                                                 onClick={() => navigate("/account")}
                                             >
                                                 <Settings size={16} />
@@ -123,7 +120,7 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
 
                                         <li>
                                             <button
-                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition"
+                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition cursor-pointer"
                                                 onClick={() => navigate("/reservations")}
                                             >
                                                 <Ticket size={16} />
@@ -132,27 +129,14 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
                                         </li>
 
                                         {/* Cinéma gérant */}
-                                        {user.role === "cine" && (
+                                        {(user.role === "cine" || user.role === "admin") && (
                                             <li>
                                                 <button
-                                                    className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition"
-                                                    onClick={() => navigate("/admin")}
+                                                    className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition cursor-pointer"
+                                                    onClick={() => navigate("/dashboard")}
                                                 >
                                                     <Building2 size={16} />
                                                     Dashboard Cinéma
-                                                </button>
-                                            </li>
-                                        )}
-
-                                        {/* Admin */}
-                                        {user.role === "admin" && (
-                                            <li>
-                                                <button
-                                                    className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition"
-                                                    onClick={() => navigate("/admin")}
-                                                >
-                                                    <LayoutDashboard size={16} />
-                                                    Administration
                                                 </button>
                                             </li>
                                         )}
@@ -162,7 +146,7 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
                                         {/* Logout */}
                                         <li>
                                             <button
-                                                className="flex items-center gap-2 w-full px-4 py-2 text-red-400 hover:bg-red-900/30 transition"
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-red-400 hover:bg-red-900/30 transition cursor-pointer"
                                                 onClick={handleLogout}
                                             >
                                                 <LogOut size={16} />
@@ -176,7 +160,7 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
                     ) : (
                         <button
                             onClick={() => navigate("/auth")}
-                            className="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-full text-sm font-semibold transition shadow-md hover:shadow-red-600/40"
+                            className="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-full text-sm font-semibold transition shadow-md hover:shadow-red-600/40 cursor-pointer text-gray-100"
                         >
                             Connexion / Inscription
                         </button>

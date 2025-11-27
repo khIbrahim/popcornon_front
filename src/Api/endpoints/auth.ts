@@ -1,6 +1,6 @@
 import { userSchema } from "../../validations/user";
 import axiosConfig from "../config";
-import type { LoginUserI, RegisterUserI, UserI } from "../../types/models/user";
+import type { LoginUserI, RegisterUserI, UserI } from "../../types/user.ts";
 import type { ResponseI } from "../../types/response";
 
 const getToken = () => sessionStorage.getItem("token") ?? localStorage.getItem("token");

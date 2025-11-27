@@ -120,7 +120,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-lg transition flex justify-center"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-lg transition flex justify-center cursor-pointer"
             >
                 {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

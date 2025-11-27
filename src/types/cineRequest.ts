@@ -1,4 +1,4 @@
-import type {BasicUserI} from "./models/user.ts";
+import type {BasicUserI} from "./user.ts";
 
 export type CineStatus = "none" | "pending" | "approved" | "rejected" | "cinema";
 
@@ -6,6 +6,8 @@ export interface CineStatusResponse {
     success: boolean;
     status: CineStatus;
     data: any;
+    message: string;
+    errors: any[];
 }
 
 export interface CineRequestI {

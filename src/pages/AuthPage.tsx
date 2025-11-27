@@ -3,6 +3,7 @@ import LoginForm from "../components/auth/LoginForm";
 import RegisterForm from "../components/auth/RegisterForm";
 import type { AuthMessage } from "../lib/types";
 import { useNavigate } from "react-router-dom";
+import {useAuth} from "../context/AuthContext.tsx";
 
 
 const AuthPage: React.FC = () => {
@@ -14,16 +15,18 @@ const AuthPage: React.FC = () => {
     const [message, setMessage] = useState<AuthMessage | null>(null);
 
     const navigate = useNavigate();
+    const {refresh} = useAuth();
 
     useEffect(() => {
         document.title = "PopcornON — Auth";
     }, []);
 
-    const handleLoginSuccess = (msg: AuthMessage) => {
+    const handleLoginSuccess = async (msg: AuthMessage) => {
         setMessage(msg);
         setIsLoginLoading(false);
 
         navigate("/");
+        await refresh();
     };
 
     const handleLoginFailure = (msg: AuthMessage) => {
@@ -31,16 +34,17 @@ const AuthPage: React.FC = () => {
         setIsLoginLoading(false);
     };
 
-    const handleRegisterSuccess = (msg: AuthMessage) => {
+    const handleRegisterSuccess = async (msg: AuthMessage) => {
         setMessage(msg);
         setIsRegisterLoading(false);
+
+        navigate("/");
+        await refresh();
     };
 
     const handleRegisterFailure = (msg: AuthMessage) => {
         setMessage(msg);
         setIsRegisterLoading(false);
-
-        navigate("/");
     };
 
     return (
@@ -63,7 +67,7 @@ const AuthPage: React.FC = () => {
                 <div className="flex bg-zinc-800/60 p-1 rounded-xl shadow-inner">
                     <button
                         onClick={() => setForm("login")}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition ${
+                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition cursor-pointer ${
                             form === "login"
                                 ? "bg-red-600 text-white shadow-lg"
                                 : "text-gray-300 hover:text-white"
@@ -74,7 +78,7 @@ const AuthPage: React.FC = () => {
 
                     <button
                         onClick={() => setForm("register")}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition ${
+                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition cursor-pointer ${
                             form === "register"
                                 ? "bg-red-600 text-white shadow-lg"
                                 : "text-gray-300 hover:text-white"
