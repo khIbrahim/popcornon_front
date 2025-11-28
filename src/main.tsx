@@ -7,6 +7,7 @@ import { router } from "./router";
 import { AuthProvider } from "./context/AuthContext";
 import {NotificationProvider} from "./context/NotificationContext.tsx";
 import NotificationsContainer from "./components/ui/NotificationsContainer.tsx";
+import "leaflet/dist/leaflet.css";
 
 const queryClient = new QueryClient();
 

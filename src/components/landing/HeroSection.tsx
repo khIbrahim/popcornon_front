@@ -1,68 +1,167 @@
-import {MapPin, Search} from "lucide-react";
+import { motion } from "framer-motion";
+import { Building2, Popcorn, ArrowDown, Sparkles } from "lucide-react";
+import Button from "../cine/ui/Button.tsx";
 
-const HeroSection = () => {
+export default function HeroSection() {
+    const scrollToContent = () => {
+        document
+            .getElementById("partner-content")
+            ?.scrollIntoView({ behavior: "smooth" });
+    };
+
     return (
-        <div className="relative bg-slate-900 overflow-hidden">
-            <div className="max-w-7xl mx-auto">
-                <div className="relative z-10 pb-8 bg-slate-900 sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32 min-h-[600px] flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0f]">
+            {/* Fond cinéma immersif */}
+            <div className="absolute inset-0">
+                {/* Gradient cinéma rouge/orange très subtil */}
+                <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-transparent to-orange-600/10" />
 
-                    <main className="mt-10 mx-auto max-w-7xl sm:mt-12 md:mt-16 lg:mt-20 xl:mt-28">
-                        <div className="sm:text-center lg:text-left">
-                            <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
-                                <span className="block xl:inline">Votre cinéma,</span>{' '}
-                                <span className="block text-red-600 xl:inline">où que vous soyez en Algérie.</span>
-                            </h1>
-                            <p className="mt-3 text-base text-gray-400 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                                Découvrez les cinémas les plus proches, consultez les séances en temps réel et réservez votre fauteuil en quelques clics.
-                            </p>
+                {/* Effet lumières cinéma (spots animés) */}
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 opacity-30"
+                >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-500/20 rounded-full blur-3xl" />
+                    <div className="absolute bottom-0 right-1/2 translate-x-1/2 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl" />
+                </motion.div>
 
-                            {/* Barre de recherche rapide */}
-                            <div className="mt-8 flex gap-2 max-w-md lg:mx-0 sm:mx-auto">
-                                <div className="relative flex-grow">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Search className="h-5 w-5 text-gray-400" />
-                                    </div>
-                                    <input
-                                        type="text"
-                                        className="block w-full pl-10 pr-3 py-3 border border-transparent rounded-l-md leading-5 bg-slate-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:bg-slate-700 focus:ring-2 focus:ring-red-500 sm:text-sm"
-                                        placeholder="Chercher un film, un cinéma..."
-                                    />
+                {/* Particules popcorn très légères */}
+                {[...Array(12)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute text-red-500/20"
+                        initial={{ y: -100, x: Math.random() * 100 + "%" }}
+                        animate={{
+                            y: "100vh",
+                            x: Math.random() * 100 + "%",
+                            rotate: Math.random() * 720 - 360,
+                        }}
+                        transition={{
+                            duration: Math.random() * 20 + 15,
+                            repeat: Infinity,
+                            delay: Math.random() * 10,
+                            ease: "linear",
+                        }}
+                    >
+                        <Popcorn size={24} />
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Contenu Hero */}
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.9, ease: "easeOut" }}
+                    className="space-y-8"
+                >
+                    {/* Badge premium */}
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                        className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-red-500/10 border border-red-500/30 backdrop-blur-sm"
+                    >
+                        <Sparkles size={16} className="text-red-400" />
+                        <span className="text-sm font-semibold text-red-400 tracking-wider">
+              PARTENARIAT EXCLUSIF 2025
+            </span>
+                    </motion.div>
+
+                    {/* Titre principal */}
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
+                        <span className="block text-white">Rejoignez</span>
+                        <span className="block bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
+              PopcornON
+            </span>
+                        <span className="block text-white">en tant que cinéma</span>
+                    </h1>
+
+                    {/* Sous-titre */}
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="max-w-3xl mx-auto text-lg sm:text-xl text-slate-300 leading-relaxed"
+                    >
+                        Augmentez votre visibilité, remplissez vos salles et touchez des milliers de cinéphiles algériens.
+                        <br className="hidden sm:block" />
+                        Intégrez le leader de la billetterie en ligne dès aujourd'hui.
+                    </motion.p>
+
+                    {/* CTA principal + secondaire */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.7 }}
+                        className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10"
+                    >
+                        <Button
+                            className="relative overflow-hidden group px-10 py-6 text-lg font-semibold shadow-2xl shadow-red-500/25"
+                            onClick={scrollToContent}
+                        >
+              <span className="relative z-10 flex items-center gap-3">
+                <Building2 size={22} />
+                Devenir partenaire
+              </span>
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-red-600 to-orange-600"
+                                initial={{ x: "-100%" }}
+                                whileHover={{ x: 0 }}
+                                transition={{ duration: 0.4 }}
+                            />
+                        </Button>
+
+                        <button
+                            onClick={scrollToContent}
+                            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+                        >
+                            Découvrir les avantages
+                            <ArrowDown size={18} className="animate-bounce" />
+                        </button>
+                    </motion.div>
+
+                    {/* Stats rapides (apparition progressive) */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1 }}
+                        className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-16"
+                    >
+                        {[
+                            { value: "+12K", label: "Spectateurs/mois" },
+                            { value: "98%", label: "Satisfaction" },
+                            { value: "0 DA", label: "Commission les 3 premiers mois" },
+                        ].map((stat, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 1.2 + i * 0.1 }}
+                                className="text-center"
+                            >
+                                <div className="text-3xl sm:text-4xl font-bold text-red-500">
+                                    {stat.value}
                                 </div>
-                                <button className="px-6 py-3 border border-transparent text-base font-medium rounded-r-md text-white bg-red-600 hover:bg-red-700 focus:outline-none transition-colors">
-                                    Rechercher
-                                </button>
-                            </div>
-                        </div>
-                    </main>
-                </div>
+                                <div className="text-xs sm:text-sm text-slate-400 mt-1">
+                                    {stat.label}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </motion.div>
             </div>
 
-            {/* Section MAP / GPS Integration */}
-            <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-slate-800 border-l border-slate-700 relative h-96 lg:h-full">
-                {/* Placeholder pour Google Maps API */}
-                <div className="w-full h-full flex flex-col items-center justify-center bg-slate-800 relative group cursor-pointer">
-
-                    {/* Simulation de la carte (Background image placeholder) */}
-                    <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1748&q=80')] bg-cover bg-center grayscale hover:grayscale-0 transition-all duration-500"></div>
-
-                    <div className="z-10 bg-slate-900/90 p-6 rounded-xl border border-slate-600 backdrop-blur-sm text-center transform transition-transform group-hover:scale-105">
-                        <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
-                            <MapPin size={32} className="animate-bounce" />
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Localisation Active</h3>
-                        <p className="text-gray-400 text-sm mb-4">Intégration Google Maps API ici.</p>
-                        <div className="text-xs text-green-400 font-mono bg-green-400/10 px-2 py-1 rounded inline-block">
-                            GPS: 36.7525° N, 3.0420° E (Alger)
-                        </div>
-                        <div className="mt-4 text-sm text-gray-300">
-                            3 Cinémas trouvés à proximité
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+            {/* Scroll indicator */}
+            <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 text-slate-500"
+            >
+                <ArrowDown size={28} />
+            </motion.div>
+        </section>
     );
-};
-
-export default HeroSection;
+}
