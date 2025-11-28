@@ -7,7 +7,7 @@ import {
     useMemo,
     type ReactNode,
 } from "react";
-import { checkAuth } from "../Api/endpoints/auth";
+import { checkAuth, logout as logoutApi } from "../Api/endpoints/auth";
 import type { UserI } from "../types/user";
 
 interface AuthContextType {
@@ -23,9 +23,8 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserI | null>(() => {
-        // Récupérer du localStorage au démarrage
         const stored = localStorage.getItem("user");
-        return stored ? JSON. parse(stored) : null;
+        return stored ? JSON.parse(stored) : null;
     });
     const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +50,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = useCallback(() => {
         setUser(null);
+        logoutApi();
+
         localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
     }, []);
 
     const handleSetUser = useCallback((newUser: UserI | null) => {

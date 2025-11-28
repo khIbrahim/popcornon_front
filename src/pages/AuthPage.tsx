@@ -4,9 +4,11 @@ import RegisterForm from "../components/auth/RegisterForm";
 import type { AuthMessage } from "../lib/types";
 import { useNavigate } from "react-router-dom";
 import {useAuth} from "../context/AuthContext.tsx";
+import {useNotification} from "../context/NotificationContext.tsx";
 
 
 const AuthPage: React.FC = () => {
+    const {notifySuccess} = useNotification();
     const [form, setForm] = useState<"login" | "register">("login");
 
     const [isLoginLoading, setIsLoginLoading] = useState(false);
@@ -27,6 +29,7 @@ const AuthPage: React.FC = () => {
 
         navigate("/");
         await refresh();
+        notifySuccess("Connexion réussie !");
     };
 
     const handleLoginFailure = (msg: AuthMessage) => {
@@ -40,6 +43,7 @@ const AuthPage: React.FC = () => {
 
         navigate("/");
         await refresh();
+        notifySuccess("Inscription réussie !");
     };
 
     const handleRegisterFailure = (msg: AuthMessage) => {

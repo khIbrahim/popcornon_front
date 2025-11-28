@@ -16,27 +16,27 @@ export default function TMDBSearchInput({ value, onChange, error }: TMDBSearchIn
     const [query, setQuery] = useState('');
     const [showResults, setShowResults] = useState(false);
     const debouncedQuery = useDebounce(query, 350);
-    const { results, isLoading, search, clearResults } = useTMDB();
+    const { results, isLoading, search, selectMovie, clearResults } = useTMDB();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Recherche debounced
     useEffect(() => {
         search(debouncedQuery);
     }, [debouncedQuery, search]);
 
-    // Fermer au clic extérieur
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
                 setShowResults(false);
             }
         };
+
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    const handleSelect = (movie: TMDBMovie) => {
-        onChange(movie);
+    const handleSelect = async (movie: TMDBMovie) => {
+        const fullMovie = await selectMovie(movie);
+        onChange(fullMovie);
         setQuery('');
         setShowResults(false);
         clearResults();
@@ -97,7 +97,6 @@ export default function TMDBSearchInput({ value, onChange, error }: TMDBSearchIn
         );
     }
 
-    // Champ de recherche
     return (
         <div ref={containerRef} className="relative space-y-1.5">
             <label className="text-xs font-medium text-slate-300">

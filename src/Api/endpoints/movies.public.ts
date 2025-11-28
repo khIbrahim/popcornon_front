@@ -11,6 +11,10 @@ export interface PublicMovie {
     genres: string[];
     releaseDate: string;
     overview: string;
+    price?: number;
+    time?: string;
+    hall?: string;
+    date?: string;
 }
 
 export interface MovieScreening {
@@ -42,13 +46,15 @@ interface MovieDetailResponse {
 export async function getPublicMovies(filters?: {
     genre?: string;
     wilaya?: string;
+    date?: string;
 }): Promise<MoviesResponse> {
     const params = new URLSearchParams();
     if (filters?.genre) params.append("genre", filters.genre);
     if (filters?.wilaya) params.append("wilaya", filters.wilaya);
+    if (filters?.date) params.append("date", filters.date);
 
     const res = await axiosConfig.get<MoviesResponse>(`/public/movies?${params}`);
-    return res.data;
+    return res. data;
 }
 
 export async function getMovieWithScreenings(movieId: string): Promise<MovieDetailResponse> {

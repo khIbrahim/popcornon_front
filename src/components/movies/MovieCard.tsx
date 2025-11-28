@@ -14,7 +14,7 @@ export default function MovieCard({ movie, onClick }: Props) {
     return (
         <button
             onClick={onClick}
-            className="group relative aspect-[2/3] rounded-xl overflow-hidden bg-white/5"
+            className="group relative aspect-[2/3] rounded-xl overflow-hidden bg-white/5 hover:shadow-lg hover:shadow-black/30 cursor-pointer"
         >
             <img
                 src={posterUrl}

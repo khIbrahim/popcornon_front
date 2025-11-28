@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X, LogOut, Ticket, Building2 } from "lucide-react";
 import {useAuth} from "../context/AuthContext.tsx";
+import {useNotification} from "../context/NotificationContext.tsx";
 
 export default function Navbar() {
+    const {notifySuccess} = useNotification();
     const { user, isLoggedIn, logout } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -28,7 +30,8 @@ export default function Navbar() {
 
     const handleLogout = async () => {
         await logout();
-        window.location.href = "/";
+        navigate("/");
+        notifySuccess("Déconnexion réussie !");
     };
 
     return (
@@ -60,7 +63,7 @@ export default function Navbar() {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setShowDropdown(!showDropdown)}
-                                className="flex items-center gap-3 hover:scale-105 transition"
+                                className="flex items-center gap-3 hover:scale-105 transition cursor-pointer"
                             >
                                 <span className="text-sm font-medium text-white">Bonjour, {user.firstName}</span>
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
@@ -74,15 +77,20 @@ export default function Navbar() {
                                         <p className="font-semibold">{user.firstName} {user.lastName}</p>
                                         <p className="text-xs text-slate-400">{user.role === "cine" ? "Cinéma" : "Utilisateur"}</p>
                                     </div>
-                                    <button onClick={() => navigate("/reservations")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3">
+                                    <button onClick={() => alert("Dans les prochaines mises à jours")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer">
                                         <Ticket size={18} /> Mes réservations
                                     </button>
                                     {(user.role === "cine" || user.role === "admin") && (
-                                        <button onClick={() => navigate("/dashboard")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3">
+                                        <button onClick={() => navigate("/dashboard")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer">
                                             <Building2 size={18} /> Dashboard cinéma
                                         </button>
                                     )}
-                                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left text-rose-400 hover:bg-rose-500/10 flex items-center gap-3">
+                                    {(user.role === "admin") && (
+                                        <button onClick={() => navigate("/admin/cine-requests")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer">
+                                            <Building2 size={18} /> Cine Requests
+                                        </button>
+                                    )}
+                                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left text-rose-400 hover:bg-rose-500/10 flex items-center gap-3 cursor-pointer">
                                         <LogOut size={18} /> Déconnexion
                                     </button>
                                 </div>
@@ -91,7 +99,7 @@ export default function Navbar() {
                     ) : (
                         <button
                             onClick={() => navigate("/auth")}
-                            className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold hover:scale-105 transition shadow-lg shadow-red-500/30"
+                            className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold hover:scale-105 transition shadow-lg shadow-red-500/30 cursor-pointer"
                         >
                             Connexion / Inscription
                         </button>
@@ -116,7 +124,7 @@ export default function Navbar() {
                         {!isLoggedIn && (
                             <button
                                 onClick={() => navigate("/auth")}
-                                className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold"
+                                className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold cursor-pointer"
                             >
                                 Connexion / Inscription
                             </button>

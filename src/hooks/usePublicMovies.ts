@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPublicMovies, getMovieWithScreenings } from "../Api/endpoints/movies.public";
 
-export function usePublicMovies(filters?: { genre?: string; wilaya?: string }) {
+export function usePublicMovies(filters?: { genre?: string; wilaya?: string; date?: string }) {
     return useQuery({
         queryKey: ["public-movies", filters],
         queryFn: () => getPublicMovies(filters),

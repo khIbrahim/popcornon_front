@@ -24,7 +24,9 @@ export default function DangerZone() {
     const isPending = cinema?.status === "pending";
 
     const activateCinema = async () => {
-        if (!cinema) return;
+        if (! cinema) {
+            return;
+        }
 
         setIsProcessing(true);
         try {
@@ -68,13 +70,20 @@ export default function DangerZone() {
     };
 
     const handleDelete = async () => {
-        if (! cinema || confirmText ! == (cinema.name || "")) {
+        if(! cinema){
+            notifyError("Erreur", "Cinéma introuvable.");
+            return;
+        }
+
+        if(confirmText !== (cinema?.name || "")) {
+            notifyError("Erreur", "Le nom du cinéma ne correspond pas.");
             return;
         }
 
         setIsProcessing(true);
 
         try {
+            console.log("Suppression du cinéma...");
             await deleteCinema();
             await refresh();
 

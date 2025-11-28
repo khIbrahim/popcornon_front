@@ -46,7 +46,6 @@ export default function CineDashboardMovies() {
         toggleStatus,
         isLoading,
     } = useMovies(selectedDate);
-    console.log(filteredMovies)
 
     const stats = useMemo(() => {
         const activeMovies = filteredMovies.filter(m => m.status === "active");

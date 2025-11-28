@@ -1,6 +1,7 @@
 import { X, Star, Clock, Calendar, MapPin, Ticket } from "lucide-react";
 import { useMovieDetail } from "../../hooks/usePublicMovies";
 import type { PublicMovie } from "../../Api/endpoints/movies.public";
+import { useState } from "react";
 
 interface Props {
     movie: PublicMovie;
@@ -10,20 +11,19 @@ interface Props {
 export default function MovieModal({ movie, onClose }: Props) {
     const { data, isLoading } = useMovieDetail(movie._id);
     const screenings = data?.screenings ?? [];
+    const [selectedScreening, setSelectedScreening] = useState<string | null>(null);
 
-    const backdropUrl = movie. backdrop
-        ? `https://image.tmdb.org/t/p/w1280${movie.backdrop}`
-        : null;
+    const backdropUrl = movie. backdrop ? `https://image.tmdb.org/t/p/w1280${movie.backdrop}` : null;
+    const posterUrl = movie.poster ? `https://image.tmdb.org/t/p/w400${movie.poster}` : "/placeholder-movie.jpg";
 
-    const posterUrl = movie.poster
-        ? `https://image.tmdb.org/t/p/w400${movie.poster}`
-        : "/placeholder-movie.jpg";
-
-    // Group by cinema
     const groupedByCinema = screenings.reduce((acc, s) => {
         const key = s.cinema._id;
-        if (!acc[key]) acc[key] = { cinema: s.cinema, times: [] };
+        if (! acc[key]) {
+            acc[key] = {cinema: s.cinema, times: []};
+        }
+
         acc[key].times.push(s);
+
         return acc;
     }, {} as Record<string, { cinema: typeof screenings[0]["cinema"]; times: typeof screenings }>);
 
@@ -43,7 +43,7 @@ export default function MovieModal({ movie, onClose }: Props) {
 
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/70"
+                        className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 cursor-pointer transition"
                     >
                         <X size={20} />
                     </button>
@@ -125,7 +125,12 @@ export default function MovieModal({ movie, onClose }: Props) {
                                             {times.map((s) => (
                                                 <button
                                                     key={s._id}
-                                                    className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-red-500/50 hover:bg-red-500/10 transition-all"
+                                                    onClick={() => setSelectedScreening(s._id)}
+                                                    className={`px-3 py-2 rounded-lg border transition-all ${
+                                                        selectedScreening === s._id
+                                                            ? 'bg-red-500/20 border-red-500 cursor-pointer'
+                                                            : 'bg-white/5 border-white/10 hover:border-red-500/50 hover:bg-red-500/10 cursor-pointer'
+                                                    }`}
                                                 >
                                                     <span className="text-sm font-semibold text-white">{s.time}</span>
                                                     <div className="text-[10px] text-slate-500 mt-0.5">
@@ -142,6 +147,17 @@ export default function MovieModal({ movie, onClose }: Props) {
                                 <p className="text-slate-500 text-sm">Aucune séance disponible</p>
                             </div>
                         )}
+                    </div>
+
+                    {/* Price & Reserve */}
+                    <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                        <button
+                            onClick={() => alert("🎬 Réservation bientôt disponible !\n\nCette fonctionnalité arrive très prochainement.")}
+                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold hover:scale-105 transition-transform cursor-pointer"
+                        >
+                            <Ticket size={18} />
+                            Réserver
+                        </button>
                     </div>
                 </div>
             </div>
