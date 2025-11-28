@@ -1,16 +1,22 @@
 export function formatDateLocal(date: Date): string {
-    return date.toLocaleDateString("fr-CA");
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
 }
 
-export function getNext7Days(startDate: Date = new Date()): Date[] {
-    const base = new Date(startDate);
-    base.setHours(0, 0, 0, 0);
+export function parseLocalDate(dateStr: string): Date {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d);
+}
 
-    const days: Date[] = [];
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(base);
-        d.setDate(base.getDate() + i);
-        days.push(d);
-    }
-    return days;
+export function getNext7Days(): Date[] {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        return d;
+    });
 }

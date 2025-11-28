@@ -27,13 +27,15 @@ export default function CinemasPage() {
         selectedWilaya !== "Toutes" ? { wilaya: selectedWilaya } : undefined
     );
 
-    console.log("loaded cinemas", cinemas)
-
     const { cinema: selectedCinema, screenings} = usePublicCinemaById(selectedCinemaId ?? undefined);
 
     const filteredCinemas = useMemo(() => {
-        if (!cinemas) return [];
-        if (!search.trim()) return cinemas;
+        if (!cinemas) {
+            return [];
+        }
+        if (!search.trim()) {
+            return cinemas;
+        }
 
         const term = search.toLowerCase();
         return cinemas.filter((c) =>
@@ -45,7 +47,7 @@ export default function CinemasPage() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
-            <Navbar isLoggedIn={false} />
+            <Navbar />
 
             {/* Hero */}
             <section className="pt-24 pb-10 px-4">

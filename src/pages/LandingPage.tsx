@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import Navbar from "../components/Navbar.tsx";
 import HeroSection from "../components/landing/HeroSection.tsx";
@@ -9,12 +9,9 @@ import Footer from "../components/Footer.tsx";
 import UserMap from "../components/ui/UserMap";
 
 import { useGeolocation } from "../hooks/useGeolocation.ts";
-import { checkAuth } from "../Api/endpoints/auth.ts";
 import MovieCarousel from "../components/movies/MovieCarousel.tsx";
 
 export default function LandingPage() {
-    const [isLoggedIn, setIsLoggedIn]                                            = useState(false);
-    const [user, setUser]                                                        = useState<any>(null);
     const { location, getLocation, resetLocation, isLoading: geoLoading, error } = useGeolocation();
     // resetLocation();
     const [showMap, setShowMap]                                                  = useState(false);
@@ -25,19 +22,9 @@ export default function LandingPage() {
         setShowMap(true);
     };
 
-    useEffect(() => {
-        const verify = async () => {
-            const res = await checkAuth();
-            setIsLoggedIn(res.success);
-            if (res.success && "data" in res) setUser(res.data);
-        };
-
-        verify();
-    }, []);
-
     return (
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden">
-            <Navbar isLoggedIn={isLoggedIn} user={user} />
+            <Navbar />
 
             <HeroSection onRequestLocation={handleLocationRequest} />
 

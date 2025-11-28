@@ -31,7 +31,7 @@ export default function MoviesPage() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0f] text-white">
-            <Navbar isLoggedIn={false} />
+            <Navbar />
 
             <main className="pt-24 pb-16 px-4">
                 <div className="max-w-6xl mx-auto">

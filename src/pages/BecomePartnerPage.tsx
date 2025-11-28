@@ -309,7 +309,7 @@ export default function BecomePartnerPage() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0f] text-slate-100">
-            <Navbar isLoggedIn={isLoggedIn} user={user || undefined} />
+            <Navbar />
 
             <main className="pt-24 pb-16">
                 <HeroSection />

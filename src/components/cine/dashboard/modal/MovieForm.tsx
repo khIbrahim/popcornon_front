@@ -14,6 +14,7 @@ import {
     type MovieStatus
 } from "../../../../types/movie.ts";
 import {useCinema} from "../../../../context/CinemaContext.tsx";
+import {formatDateLocal} from "../../../../utils/date.ts";
 
 interface MovieFormProps {
     initial?: Movie;
@@ -38,7 +39,9 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
     const [time, setTime] = useState(initial?.time ?? '');
     const [hall, setHall] = useState(initial?.hall ?? 'Chargement');
     const [status, setStatus] = useState<MovieStatus>(initial?.status ?? 'draft');
-    const [date, setDate] = useState(initial?.date ?? defaultDate ?? '');
+    const [date, setDate] = useState(
+        initial?.date ?? defaultDate ?? formatDateLocal(new Date())
+    );
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 

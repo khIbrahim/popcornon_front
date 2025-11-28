@@ -16,30 +16,17 @@ import { useMovies } from "../../hooks/useMovies";
 import { useNotification } from "../../context/NotificationContext";
 import type { Movie } from "../../types/movie";
 
+import { formatDateLocal, getNext7Days } from "../../utils/date";
+
 interface OutletContext {
     openSidebar: () => void;
-}
-
-function formatDate(date: Date): string {
-    return date.toISOString().split("T")[0];
-}
-
-function getNext7Days(): Date[] {
-    const days: Date[] = [];
-    for (let i = 0; i < 7; i++) {
-        const d = new Date();
-        d.setDate(d.getDate() + i);
-        d.setHours(0, 0, 0, 0);
-        days. push(d);
-    }
-    return days;
 }
 
 export default function CineDashboardMovies() {
     const { openSidebar } = useOutletContext<OutletContext>();
     const { notifySuccess, notifyError } = useNotification();
 
-    const [selectedDate, setSelectedDate] = useState<string>(() => formatDate(new Date()));
+    const [selectedDate, setSelectedDate] = useState<string>(() => formatDateLocal(new Date()));
     const days = useMemo(() => getNext7Days(), []);
 
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -59,6 +46,7 @@ export default function CineDashboardMovies() {
         toggleStatus,
         isLoading,
     } = useMovies(selectedDate);
+    console.log(filteredMovies)
 
     const stats = useMemo(() => {
         const activeMovies = filteredMovies.filter(m => m.status === "active");
@@ -145,11 +133,15 @@ export default function CineDashboardMovies() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        if (date.getTime() === today.getTime()) return "Aujourd'hui";
+        if (date.getTime() === today.getTime()) {
+            return "Aujourd'hui";
+        }
 
         const tomorrow = new Date(today);
         tomorrow. setDate(tomorrow. getDate() + 1);
-        if (date.getTime() === tomorrow.getTime()) return "Demain";
+        if (date.getTime() === tomorrow.getTime()) {
+            return "Demain";
+        }
 
         return date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "short" });
     }, [selectedDate]);

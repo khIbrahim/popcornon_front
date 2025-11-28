@@ -1,14 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X, LogOut, Ticket, Building2 } from "lucide-react";
-import { logout } from "../Api/endpoints/auth.ts";
+import {useAuth} from "../context/AuthContext.tsx";
 
-interface NavbarProps {
-    isLoggedIn: boolean;
-    user?: { firstName: string; lastName: string; role: "user" | "admin" | "cine" };
-}
-
-export default function Navbar({ isLoggedIn, user }: NavbarProps) {
+export default function Navbar() {
+    const { user, isLoggedIn, logout } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);

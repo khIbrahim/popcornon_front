@@ -1,4 +1,5 @@
 import classNames from "../../../utils/utils";
+import {formatDateLocal} from "../../../utils/date.ts";
 
 interface Props {
     days: Date[];
@@ -8,10 +9,6 @@ interface Props {
 
 const DAYS_SHORT = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 
-function formatDate(date: Date): string {
-    return date.toISOString().split("T")[0];
-}
-
 export default function DaySelector({ days, selectedDate, onSelect }: Props) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -19,7 +16,7 @@ export default function DaySelector({ days, selectedDate, onSelect }: Props) {
     return (
         <div className="flex items-center gap-2 p-1. 5 rounded-2xl bg-white/[0. 02] border border-white/5 overflow-x-auto">
             {days.map((day) => {
-                const dateStr = formatDate(day);
+                const dateStr = formatDateLocal(day);
                 const isSelected = selectedDate === dateStr;
                 const isToday = day.getTime() === today.getTime();
                 const dayName = isToday ? "Auj" : DAYS_SHORT[day.getDay()];
