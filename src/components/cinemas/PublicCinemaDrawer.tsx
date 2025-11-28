@@ -74,7 +74,6 @@ export default function PublicCinemaDrawer({ cinema, screenings, onClose }: Prop
         newStart.setDate(weekStart.getDate() - 7);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        // on ne permet pas de remonter avant aujourd’hui
         if (newStart >= today) {
             setWeekStart(newStart);
             setSelectedDate(formatDateLocal(newStart));

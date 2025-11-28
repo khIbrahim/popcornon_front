@@ -1,4 +1,5 @@
 import type { WeekHours } from "./openingHours";
+import type {CinemaLocation} from "./geolocation.ts";
 
 export interface PublicCinemaHall {
     name: string;
@@ -35,6 +36,8 @@ export interface PublicCinema {
     halls: PublicCinemaHall[];
     openingHours: WeekHours;
     stats?: PublicCinemaStats;
+
+    location: CinemaLocation;
 }
 
 export interface PublicCinemaScreening {

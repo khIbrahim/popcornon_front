@@ -17,6 +17,7 @@ export interface Cinema {
     openingHours?: WeekHours;
     status: "active" | "pending" | "suspended";
     createdAt: string;
+    location: CinemaLocation;
 }
 
 export interface CinemaScreening {
@@ -35,4 +36,9 @@ export interface CinemaScreening {
     hall: string;
     price: number;
     availableSeats: number;
+}
+
+export interface CinemaLocation {
+    type: "Point";
+    coordinates: [number, number]; // [longitude, latitude]
 }

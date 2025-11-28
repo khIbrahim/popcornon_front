@@ -6,8 +6,9 @@ import GeneralSettings from "../../components/cine/settings/GeneralSettings.tsx"
 import HallsSettings from "../../components/cine/settings/HallsSettings.tsx";
 import HoursSettings from "../../components/cine/settings/HoursSettings.tsx";
 import DangerZone from "../../components/cine/settings/DangerZone.tsx";
+import LocationSettings from "../../components/cine/settings/LocationSettings.tsx";
 
-type SettingsTab = "general" | "halls" | "hours" | "media" | "danger";
+type SettingsTab = "general" | "halls" | "hours" | "danger" | "location";
 
 export default function CineSettingsPage() {
     const { setSidebarOpen } = useOutletContext<{ setSidebarOpen: (v: boolean) => void }>();
@@ -30,6 +31,7 @@ export default function CineSettingsPage() {
                         {activeTab === "halls" && <HallsSettings />}
                         {activeTab === "hours" && <HoursSettings />}
                         {activeTab === "danger" && <DangerZone />}
+                        {activeTab === "location" && <LocationSettings />}
                     </div>
                 </div>
             </main>

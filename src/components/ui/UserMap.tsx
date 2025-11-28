@@ -1,35 +1,20 @@
-import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import MapView from "./MapView";
 
 interface Props {
     latitude: number;
     longitude: number;
+    label?: string;
 }
 
-const userIcon = L.icon({
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-});
-
-export default function UserMap({ latitude, longitude }: Props) {
+export default function UserMap({ latitude, longitude, label = "Votre position" }: Props) {
     return (
-        <div className="w-full h-[400px] rounded-2xl overflow-hidden border border-white/10">
-            <MapContainer
-                center={[latitude, longitude]}
-                zoom={15}
-                scrollWheelZoom={true}
-                className="w-full h-full"
-            >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution="© OpenStreetMap"
-                />
-
-                <Marker position={[latitude, longitude]} icon={userIcon}>
-                    <Popup>Votre position</Popup>
-                </Marker>
-            </MapContainer>
-        </div>
+        <MapView
+            center={[latitude, longitude]}
+            zoom={15}
+            markers={[
+                { id: "user", lat: latitude, lng: longitude, type: "user", label },
+            ]}
+            height="400px"
+        />
     );
 }

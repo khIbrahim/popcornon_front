@@ -1,42 +1,60 @@
-import {useState, useCallback} from "react";
-import type {UserLocation} from "../types/geolocation.ts";
+import { useState, useCallback } from "react";
+import type { UserLocation } from "../types/geolocation";
 
-export function useGeolocation() {
+interface UseGeolocationOptions {
+    enableHighAccuracy?: boolean;
+    timeout?: number;
+    maximumAge?: number;
+}
+
+export function useGeolocation(options: UseGeolocationOptions = {}) {
     const [location, setLocation]   = useState<UserLocation | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError]         = useState<string | null>(null);
+
+    const {
+        enableHighAccuracy = true,
+        timeout = 10000,
+        maximumAge = 0
+    } = options;
 
     const getLocation = useCallback(() => {
         setIsLoading(true);
         setError(null);
 
-        if(! navigator.geolocation){
-            setError("La géolocalisation n'est pas supporté par votre navigateur.");
+        if ( !navigator.geolocation) {
+            setError("La géolocalisation n'est pas supportée par votre navigateur.");
             setIsLoading(false);
             return;
         }
 
-        navigator.geolocation.getCurrentPosition(
+        navigator.geolocation. getCurrentPosition(
             (position) => {
                 setLocation({
-                    latitude:  position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy:  position.coords.accuracy,
-                    timestamp: position.timestamp,
+                    latitude: position.coords.latitude,
+                    longitude: position.coords. longitude,
+                    accuracy: position.coords.accuracy,
+                    timestamp: position. timestamp,
                 });
                 setIsLoading(false);
             },
-            (error) => {
+            (err) => {
+                const messages: Record<number, string> = {
+                    1: "Permission refusée.  Autorisez la géolocalisation dans votre navigateur.",
+                    2: "Position indisponible.  Vérifiez votre connexion.",
+                    3: "Délai d'attente dépassé. Réessayez.",
+                };
+                setError(messages[err.code] || err.message);
                 setIsLoading(false);
-                setError(error.message);
             },
-            {
-                enableHighAccuracy: true,
-            }
+            { enableHighAccuracy, timeout, maximumAge }
         );
-    }, []);
+    }, [enableHighAccuracy, timeout, maximumAge]);
 
-    const resetLocation = () => setLocation(null);
+    const resetLocation = useCallback(() => {
+        setLocation(null);
+        setError(null);
+    }, []);
 
     return {
         location,
@@ -44,5 +62,6 @@ export function useGeolocation() {
         error,
         getLocation,
         resetLocation,
+        hasLocation: !!location,
     };
 }

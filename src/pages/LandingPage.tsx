@@ -1,25 +1,27 @@
 import { useState } from "react";
 
-import Navbar from "../components/Navbar.tsx";
-import HeroSection from "../components/landing/HeroSection.tsx";
-import CinemasMapSection from "../components/landing/CinemasMapSection.tsx";
-import FeaturesSection from "../components/landing/FeaturesSection.tsx";
-import PartnerTeaserSection from "../components/landing/PartnerTeaserSection.tsx";
-import Footer from "../components/Footer.tsx";
-import UserMap from "../components/ui/UserMap";
+import Navbar from "../components/Navbar";
+import HeroSection from "../components/landing/HeroSection";
+import FeaturesSection from "../components/landing/FeaturesSection";
+import PartnerTeaserSection from "../components/landing/PartnerTeaserSection";
+import Footer from "../components/Footer";
+import MovieCarousel from "../components/movies/MovieCarousel";
 
-import { useGeolocation } from "../hooks/useGeolocation.ts";
-import MovieCarousel from "../components/movies/MovieCarousel.tsx";
+import { useGeolocation } from "../hooks/useGeolocation";
+import CinemasNearby from "../components/landing/CinemasNearBy.tsx";
 
 export default function LandingPage() {
     const { location, getLocation, resetLocation, isLoading: geoLoading, error } = useGeolocation();
-    // resetLocation();
-    const [showMap, setShowMap]                                                  = useState(false);
+    const [showMap, setShowMap] = useState(false);
 
-    const handleLocationRequest = async () => {
-        console.log("hello");
-        await getLocation();
+    const handleLocationRequest = () => {
+        getLocation();
         setShowMap(true);
+    };
+
+    const handleCloseMap = () => {
+        setShowMap(false);
+        resetLocation();
     };
 
     return (
@@ -28,50 +30,31 @@ export default function LandingPage() {
 
             <HeroSection onRequestLocation={handleLocationRequest} />
 
-            {/* MAP SECTION */}
-            {showMap && (
-                <section className="pb-20 px-4">
-                    <div className="max-w-5xl mx-auto space-y-6 mt-10">
-
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-3xl font-bold">
-                                Cinémas près de vous
-                            </h2>
-
-                            <button
-                                onClick={() => {
-                                    setShowMap(false);
-                                    resetLocation();
-                                }}
-                                className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition"
-                            >
-                                Réduire
-                            </button>
-                        </div>
-
+            {/* Géoloc loading/error */}
+            {showMap && (geoLoading || error) && (
+                <section className="py-12 px-4">
+                    <div className="max-w-5xl mx-auto">
                         {geoLoading && (
-                            <p className="text-slate-400">Localisation en cours...</p>
+                            <div className="flex items-center justify-center gap-3 py-8">
+                                <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                                <p className="text-slate-400">Localisation en cours...</p>
+                            </div>
                         )}
-
                         {error && (
-                            <p className="text-rose-400 bg-rose-400/10 p-3 rounded-xl border border-rose-400/20">
+                            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
                                 {error}
-                            </p>
-                        )}
-
-                        {location && (
-                            <UserMap
-                                latitude={location.latitude}
-                                longitude={location.longitude}
-                            />
+                            </div>
                         )}
                     </div>
                 </section>
             )}
 
-            <MovieCarousel limit={10} />
+            {/* Cinemas Map */}
+            {showMap && location && (
+                <CinemasNearby userLocation={location} onClose={handleCloseMap} />
+            )}
 
-            {location && <CinemasMapSection userLocation={location} />}
+            <MovieCarousel limit={10} />
 
             <FeaturesSection />
 

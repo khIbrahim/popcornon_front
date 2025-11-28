@@ -15,14 +15,24 @@ export async function getPublicCinemas(params?: {
 }): Promise<PublicCinemasListResponse> {
     const searchParams = new URLSearchParams();
 
-    if (params?.wilaya) searchParams.append("wilaya", params.wilaya);
-    if (params?.city) searchParams.append("city", params.city);
-    if (params?.q) searchParams.append("q", params.q);
-    if (params?.page) searchParams.append("page", String(params.page));
-    if (params?.limit) searchParams.append("limit", String(params.limit));
+    if (params?.wilaya) {
+        searchParams.append("wilaya", params.wilaya);
+    }
+    if (params?.city) {
+        searchParams.append("city", params.city);
+    }
+    if (params?.q) {
+        searchParams.append("q", params.q);
+    }
+    if (params?.page) {
+        searchParams.append("page", String(params.page));
+    }
+    if (params?.limit) {
+        searchParams.append("limit", String(params.limit));
+    }
 
     const query = searchParams.toString();
-    const url = query ? `/public-cinemas?${query}` : `/public-cinemas`;
+    const url   = query ? `/public-cinemas?${query}` : `/public-cinemas`;
 
     const res = await axiosConfig.get<PublicCinemasListResponse>(url);
     return res.data;

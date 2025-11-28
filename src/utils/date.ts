@@ -10,7 +10,7 @@ export function parseLocalDate(dateStr: string): Date {
     return new Date(y, m - 1, d);
 }
 
-export function getNext7Days(): Date[] {
+export function getNext7Days(weekStart: Date): Date[] {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

@@ -8,7 +8,6 @@ import CinemaCarousel from "./CinemaCarousel.tsx";
 
 export default function PartnerTeaserSection() {
     const navigate = useNavigate();
-    // @ts-ignore
     const [selectedCinemaId, setSelectedCinemaId] = useState<string | null>(null);
     const { cinema: selectedCinema, screenings} = usePublicCinemaById(selectedCinemaId ?? undefined);
 
