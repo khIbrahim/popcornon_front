@@ -1,31 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    Menu,
-    User,
-    X,
-    LogOut,
-    Settings,
-    Ticket,
-    Building2
-} from "lucide-react";
-import {logout} from "../Api/endpoints/auth.ts";
+import { Menu, X, LogOut, Ticket, Building2 } from "lucide-react";
+import { logout } from "../Api/endpoints/auth.ts";
 
 interface NavbarProps {
     isLoggedIn: boolean;
-    user?: {
-        firstName: string;
-        lastName: string;
-        role: "user" | "admin" | "cine";
-    };
+    user?: { firstName: string; lastName: string; role: "user" | "admin" | "cine" };
 }
 
 export default function Navbar({ isLoggedIn, user }: NavbarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-    const dropdownRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -38,37 +25,32 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
     }, []);
 
     const navLinks = [
-        { label: "Home", href: "/" },
         { label: "Films", href: "/movies" },
         { label: "Cinémas", href: "/cinemas" },
-        { label: "Devenir Partenaire", href: "/become-partner" },
+        { label: "Devenir partenaire", href: "/become-partner" },
     ];
 
-    const handleLogout = () => {
-        try {
-            logout();
-
-            window.location.href = "/";
-        } catch (error) {
-            console.error("Logout failed:", error);
-        }
-    }
+    const handleLogout = async () => {
+        await logout();
+        window.location.href = "/";
+    };
 
     return (
-        <header className="fixed top-0 w-full z-50 bg-slate-900/95 backdrop-blur-md border-b border-red-500/20 shadow-[0_0_10px_rgba(255,0,0,0.2)]">
-            <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-
-                <a href="/public" className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-red-500">🍿 PopcornON</span>
+        <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-white/5">
+            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                {/* Logo */}
+                <a href="/" className="flex items-center gap-2">
+                    <span className="text-3xl">🍿</span>
+                    <span className="text-2xl font-black text-white">PopcornON</span>
                 </a>
 
-                {/* Desktop Navigation */}
+                {/* Desktop Links */}
                 <ul className="hidden md:flex items-center gap-10">
                     {navLinks.map((link) => (
                         <li key={link.href}>
                             <a
                                 href={link.href}
-                                className="text-sm font-semibold text-gray-200 hover:text-red-500 hover:underline underline-offset-4 transition"
+                                className="text-sm font-semibold text-slate-300 hover:text-red-500 transition"
                             >
                                 {link.label}
                             </a>
@@ -76,105 +58,76 @@ export default function Navbar({ isLoggedIn, user }: NavbarProps) {
                     ))}
                 </ul>
 
-                <div className="hidden md:flex items-center">
+                {/* Desktop Auth */}
+                <div className="hidden md:flex items-center gap-4">
                     {isLoggedIn && user ? (
                         <div className="relative" ref={dropdownRef}>
                             <button
-                                onClick={() => setShowDropdown((v) => !v)}
-                                className="flex items-center gap-2 group card cursor-pointer"
+                                onClick={() => setShowDropdown(!showDropdown)}
+                                className="flex items-center gap-3 hover:scale-105 transition"
                             >
-                <span className="text-sm text-gray-300 font-medium">
-                  Bonjour, {user.firstName}
-                </span>
-                                <div className="h-9 w-9 rounded-full bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/30 transition-transform group-hover:scale-105">
-                                    <User size={18} />
+                                <span className="text-sm font-medium text-white">Bonjour, {user.firstName}</span>
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                                    {user.firstName[0]}{user.lastName[0]}
                                 </div>
                             </button>
 
-                            {/* Dropdown menu */}
                             {showDropdown && (
-                                <div
-                                    className="absolute right-0 mt-3 w-56 rounded-xl border border-slate-700 bg-slate-900/95 backdrop-blur-xl shadow-xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2"
-                                >
-                                    {/* USER NAME */}
-                                    <div className="px-4 py-3 border-b border-slate-700/70">
-                                        <p className="text-sm font-medium text-white">
-                                            {user.firstName} {user.lastName}
-                                        </p>
-                                        <p className="text-xs text-slate-400 uppercase tracking-wide">
-                                            {user.role}
-                                        </p>
+                                <div className="absolute right-0 mt-3 w-64 py-2 rounded-2xl bg-[#0a0a0f] border border-white/10 shadow-2xl">
+                                    <div className="px-4 py-3 border-b border-white/10">
+                                        <p className="font-semibold">{user.firstName} {user.lastName}</p>
+                                        <p className="text-xs text-slate-400">{user.role === "cine" ? "Cinéma" : "Utilisateur"}</p>
                                     </div>
-
-                                    {/* Menu items */}
-                                    <ul className="py-1 text-sm text-slate-200">
-                                        <li>
-                                            <button
-                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition cursor-pointer"
-                                                onClick={() => navigate("/account")}
-                                            >
-                                                <Settings size={16} />
-                                                Mon compte
-                                            </button>
-                                        </li>
-
-                                        <li>
-                                            <button
-                                                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition cursor-pointer"
-                                                onClick={() => navigate("/reservations")}
-                                            >
-                                                <Ticket size={16} />
-                                                Mes Réservations
-                                            </button>
-                                        </li>
-
-                                        {/* Cinéma gérant */}
-                                        {(user.role === "cine" || user.role === "admin") && (
-                                            <li>
-                                                <button
-                                                    className="flex items-center gap-2 w-full px-4 py-2 hover:bg-slate-800/70 transition cursor-pointer"
-                                                    onClick={() => navigate("/dashboard")}
-                                                >
-                                                    <Building2 size={16} />
-                                                    Dashboard Cinéma
-                                                </button>
-                                            </li>
-                                        )}
-
-                                        <hr className="my-1 border-slate-700/50" />
-
-                                        {/* Logout */}
-                                        <li>
-                                            <button
-                                                className="flex items-center gap-2 w-full px-4 py-2 text-red-400 hover:bg-red-900/30 transition cursor-pointer"
-                                                onClick={handleLogout}
-                                            >
-                                                <LogOut size={16} />
-                                                Déconnexion
-                                            </button>
-                                        </li>
-                                    </ul>
+                                    <button onClick={() => navigate("/reservations")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3">
+                                        <Ticket size={18} /> Mes réservations
+                                    </button>
+                                    {(user.role === "cine" || user.role === "admin") && (
+                                        <button onClick={() => navigate("/dashboard")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3">
+                                            <Building2 size={18} /> Dashboard cinéma
+                                        </button>
+                                    )}
+                                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left text-rose-400 hover:bg-rose-500/10 flex items-center gap-3">
+                                        <LogOut size={18} /> Déconnexion
+                                    </button>
                                 </div>
                             )}
                         </div>
                     ) : (
                         <button
                             onClick={() => navigate("/auth")}
-                            className="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-full text-sm font-semibold transition shadow-md hover:shadow-red-600/40 cursor-pointer text-gray-100"
+                            className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold hover:scale-105 transition shadow-lg shadow-red-500/30"
                         >
                             Connexion / Inscription
                         </button>
                     )}
                 </div>
 
-                {/* Mobile Button */}
-                <button
-                    className="md:hidden text-gray-200"
-                    onClick={() => setIsOpen((p) => !p)}
-                >
-                    {isOpen ? <X size={26} /> : <Menu size={26} />}
+                {/* Mobile Menu Button */}
+                <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+                    {isOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>
             </nav>
+
+            {/* Mobile Menu */}
+            {isOpen && (
+                <div className="md:hidden absolute top-16 inset-x-0 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/10">
+                    <div className="px-6 py-6 space-y-6">
+                        {navLinks.map((link) => (
+                            <a key={link.href} href={link.href} className="block text-lg font-semibold text-white">
+                                {link.label}
+                            </a>
+                        ))}
+                        {!isLoggedIn && (
+                            <button
+                                onClick={() => navigate("/auth")}
+                                className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold"
+                            >
+                                Connexion / Inscription
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
         </header>
     );
 }

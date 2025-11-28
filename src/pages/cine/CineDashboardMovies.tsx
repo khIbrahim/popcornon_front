@@ -65,21 +65,17 @@ export default function CineDashboardMovies() {
         return {
             total: filteredMovies.length,
             active: activeMovies.length,
-            avgPrice: activeMovies. length > 0
-                ? Math.round(activeMovies.reduce((sum, m) => sum + (m.price || 0), 0) / activeMovies. length)
-                : 0,
+            avgPrice: activeMovies. length > 0 ? Math.round(activeMovies.reduce((sum, m) => sum + (m.price || 0), 0) / activeMovies. length) : 0,
             totalRuntime: activeMovies.reduce((sum, m) => sum + (m.runtime || 0), 0),
         };
     }, [filteredMovies]);
 
-    // Fermer dropdown au clic extérieur
     useEffect(() => {
         const handleClick = () => setActiveDropdown(null);
         document.addEventListener("click", handleClick);
         return () => document. removeEventListener("click", handleClick);
     }, []);
 
-    // Handlers
     const handleCreateMovie = () => {
         setEditingMovie(null);
         setIsFormOpen(true);
@@ -124,7 +120,9 @@ export default function CineDashboardMovies() {
     };
 
     const confirmDeleteMovie = () => {
-        if (! movieToDelete) return;
+        if (! movieToDelete) {
+            return;
+        }
 
         deleteMovie.mutate(movieToDelete._id, {
             onSuccess: () => {
@@ -142,7 +140,6 @@ export default function CineDashboardMovies() {
         setEditingMovie(null);
     };
 
-    // Label de la date sélectionnée
     const selectedDateLabel = useMemo(() => {
         const date = new Date(selectedDate);
         const today = new Date();

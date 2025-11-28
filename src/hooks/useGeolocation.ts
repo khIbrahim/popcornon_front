@@ -36,10 +36,13 @@ export function useGeolocation() {
         );
     }, []);
 
+    const resetLocation = () => setLocation(null);
+
     return {
         location,
         isLoading,
         error,
-        getLocation
+        getLocation,
+        resetLocation,
     };
 }

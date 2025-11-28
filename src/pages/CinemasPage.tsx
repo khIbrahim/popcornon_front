@@ -1,4 +1,3 @@
-// src/pages/CinemasPage.tsx
 import { useState, useMemo } from "react";
 import {
     Search,

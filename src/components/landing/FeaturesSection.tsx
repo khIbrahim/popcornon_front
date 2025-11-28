@@ -1,36 +1,43 @@
-import {Film, MapPin, Ticket} from "lucide-react";
+import { motion } from "framer-motion";
+import { MapPin, Ticket, Film, Smartphone, Clock, Users } from "lucide-react";
 
-const FeaturesSection = () => (
-    <section className="py-20 bg-slate-900 relative overflow-hidden">
-        {/* Decorative blobs */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+const features = [
+    { icon: MapPin, title: "Géoloc instantanée", desc: "Cinémas ouverts autour de toi en 1 clic" },
+    { icon: Ticket, title: "E-billet QR Code", desc: "Paiement CIB/Edahabia • Zéro file d’attente" },
+    { icon: Film, title: "Toutes les salles", desc: "Programmation complète de toute l’Algérie" },
+    { icon: Smartphone, title: "100 % mobile", desc: "Réserve depuis ton téléphone, partout" },
+    { icon: Clock, title: "Horaires en temps réel", desc: "Mise à jour automatique des séances" },
+    { icon: Users, title: "+150 000 cinéphiles", desc: "Rejoins la plus grande communauté cinéma DZ" },
+];
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-16">
-                <h2 className="text-3xl font-extrabold text-white">Pourquoi utiliser CinéDz ?</h2>
-                <p className="mt-4 text-xl text-gray-400">Plus besoin de faire la queue ou de vérifier plusieurs sites.</p>
+export default function FeaturesSection() {
+    return (
+        <section className="py-24 bg-[#0a0a0f]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl sm:text-5xl font-black mb-4">Pourquoi PopcornON ?</h2>
+                    <p className="text-xl text-slate-400">L’expérience cinéma réinventée pour l’Algérie</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {features.map((f, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 40 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.1, duration: 0.6 }}
+                            viewport={{ once: true }}
+                            className="group relative p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-red-500/30 transition-all duration-300"
+                        >
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center mb-6 shadow-lg shadow-red-500/30 group-hover:scale-110 transition-transform duration-300">
+                                <f.icon size={32} className="text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3 text-white">{f.title}</h3>
+                            <p className="text-slate-400 leading-relaxed">{f.desc}</p>
+                        </motion.div>
+                    ))}
+                </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                {[
-                    { icon: MapPin, title: "Géolocalisation Précise", desc: "Trouvez instantanément les cinémas ouverts autour de votre position GPS." },
-                    { icon: Ticket, title: "E-Billet Instantané", desc: "Réservez votre place, payez en ligne (CIB/Edahabia) et recevez votre QR Code." },
-                    { icon: Film, title: "Catalogue Complet", desc: "Accédez à la programmation de toutes les salles d'Algérie en une seule application." }
-                ].map((feature, index) => (
-                    <div key={index} className="bg-slate-800/50 backdrop-blur-sm p-8 rounded-2xl border border-slate-700 hover:bg-slate-800 transition-colors">
-                        <div className="w-14 h-14 bg-red-600 rounded-lg flex items-center justify-center text-white mb-6 shadow-lg shadow-red-600/20">
-                            <feature.icon size={28} />
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-                        <p className="text-gray-400 leading-relaxed">
-                            {feature.desc}
-                        </p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-export default FeaturesSection;
+        </section>
+    );
+}
