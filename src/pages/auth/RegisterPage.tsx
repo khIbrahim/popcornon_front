@@ -98,8 +98,6 @@ export default function RegisterPage() {
             return;
         }
 
-        console.log("hello");
-
         try {
             const res = await register({ email, password, confirmPassword, firstName, lastName, phone, acceptTerms: acceptTerms, rememberMe });
 
