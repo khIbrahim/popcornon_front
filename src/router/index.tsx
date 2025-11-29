@@ -11,6 +11,8 @@ import CineDashboardLayout from "../layouts/CineDashboardLayout.tsx";
 import CinemasPage from "../pages/CinemasPage.tsx";
 import MoviesPage from "../pages/MoviesPage.tsx";
 import LocationMapPage from "../pages/LocationMapPage.tsx";
+import RegisterPage from "../pages/auth/RegisterPage.tsx";
+import LoginPage from "../pages/auth/LoginPage.tsx";
 
 export const router = createBrowserRouter([
     { path: "/", element: <App /> },
@@ -40,7 +42,9 @@ export const router = createBrowserRouter([
     },
 
     { path: "/become-partner", element: <BecomePartnerPage /> },
-    { path: "/cinemas", element: <CinemasPage/> },
-    { path: "/movies", element: <MoviesPage/> },
-    { path: "/test", element: <LocationMapPage/> }
+    { path: "/cinemas", element: <CinemasPage /> },
+    { path: "/movies", element: <MoviesPage /> },
+    { path: "/test", element: <LocationMapPage /> },
+    { path: "/register", element: <RegisterPage />},
+    { path: "/login", element: <LoginPage />}
 ]);

@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import {useAuth} from "../context/AuthContext.tsx";
 import {useNotification} from "../context/NotificationContext.tsx";
 
-
 const AuthPage: React.FC = () => {
     const {notifySuccess} = useNotification();
     const [form, setForm] = useState<"login" | "register">("login");

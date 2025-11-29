@@ -29,7 +29,7 @@ export default function Navbar() {
     ];
 
     const handleLogout = async () => {
-        await logout();
+        logout();
         navigate("/");
         notifySuccess("Déconnexion réussie !");
     };
@@ -98,7 +98,7 @@ export default function Navbar() {
                         </div>
                     ) : (
                         <button
-                            onClick={() => navigate("/auth")}
+                            onClick={() => navigate("/login")}
                             className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold hover:scale-105 transition shadow-lg shadow-red-500/30 cursor-pointer"
                         >
                             Connexion / Inscription
@@ -121,9 +121,9 @@ export default function Navbar() {
                                 {link.label}
                             </a>
                         ))}
-                        {!isLoggedIn && (
+                        {! isLoggedIn && (
                             <button
-                                onClick={() => navigate("/auth")}
+                                onClick={() => navigate("/login")}
                                 className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold cursor-pointer"
                             >
                                 Connexion / Inscription
