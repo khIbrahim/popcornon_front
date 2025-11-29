@@ -67,9 +67,8 @@ export default function RegisterPage() {
         const lastName = String(data.get("lastName") || "");
         const phone = String(data.get("phone") || "");
         const rememberMe = Boolean(data.get("rememberMe"));
-        const acceptTerms = Boolean(data.get("acceptTerms"));
 
-        if (! email || ! password || ! confirmPassword || ! firstName || ! lastName || ! acceptTerms) {
+        if (! email || ! password || ! confirmPassword || ! firstName || ! lastName) {
             notifyError("Tous les champs sont requis.");
             setIsLoading(false);
             return;
@@ -93,8 +92,16 @@ export default function RegisterPage() {
             return;
         }
 
+        if(! acceptTerms){
+            notifyError("Vous devez accepter les conditions d'utilisation.");
+            setIsLoading(false);
+            return;
+        }
+
+        console.log("hello");
+
         try {
-            const res = await register({ email, password, confirmPassword, firstName, lastName, phone, acceptTerms, rememberMe });
+            const res = await register({ email, password, confirmPassword, firstName, lastName, phone, acceptTerms: acceptTerms, rememberMe });
 
             if (res.success) {
                 navigate("/");
@@ -157,9 +164,9 @@ export default function RegisterPage() {
                     {/* Decorative Top Line */}
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
 
-                        {/* Section Identité */}
+                    {/* Section Identité */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label htmlFor="firstName" className="text-slate-200">Prénom</Label>
@@ -167,6 +174,7 @@ export default function RegisterPage() {
                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="firstName"
+                                        name="firstName"
                                         type="text"
                                         placeholder="Jean"
                                         value={formData.firstName}
@@ -180,6 +188,7 @@ export default function RegisterPage() {
                                 <Label htmlFor="lastName" className="text-slate-200">Nom</Label>
                                 <Input
                                     id="lastName"
+                                    name="lastName"
                                     type="text"
                                     placeholder="Dupont"
                                     value={formData.lastName}
@@ -198,6 +207,7 @@ export default function RegisterPage() {
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="email"
+                                        name="email"
                                         type="email"
                                         placeholder="votre@email.com"
                                         value={formData.email}
@@ -213,6 +223,7 @@ export default function RegisterPage() {
                                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="phone"
+                                        name="phone"
                                         type="tel"
                                         placeholder="05 XX XX XX XX"
                                         value={formData.phone}
@@ -231,6 +242,7 @@ export default function RegisterPage() {
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="password"
+                                        name="password"
                                         type="password"
                                         placeholder="••••••••"
                                         value={formData.password}
@@ -264,6 +276,7 @@ export default function RegisterPage() {
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         id="confirmPassword"
+                                        name="confirmPassword"
                                         type="password"
                                         placeholder="••••••••"
                                         value={formData.confirmPassword}
@@ -280,6 +293,7 @@ export default function RegisterPage() {
                             <div className="flex items-center gap-3">
                                 <Checkbox
                                     id="terms"
+                                    name="acceptTerms"
                                     checked={acceptTerms}
                                     onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
                                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary border-white/30 h-5 w-5 rounded-md"
@@ -293,8 +307,8 @@ export default function RegisterPage() {
                         {/* Submit Button */}
                         <Button
                             type="submit"
-                            disabled={isLoading || !acceptTerms}
-                            className="w-full h-14 text-base bg-gradient-to-r from-primary to-accent hover:to-primary hover:opacity-90 transition-all text-white font-bold rounded-xl shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                            disabled={isLoading || ! acceptTerms}
+                            className="w-full h-14 text-base bg-gradient-to-r from-primary to-accent hover:to-primary hover:opacity-90 transition-all text-white font-bold rounded-xl shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
                         >
                             {isLoading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
