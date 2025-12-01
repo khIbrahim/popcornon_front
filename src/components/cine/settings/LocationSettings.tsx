@@ -8,10 +8,9 @@ import { updateCinema } from "../../../Api/endpoints/cinemas";
 
 export default function LocationSettings() {
     const { notifySuccess, notifyError } = useNotification();
-    const { cinema, refreshCinema } = useCinema();
-    const [isLoading, setIsLoading] = useState(false);
-    const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
-    const [hasChanges, setHasChanges] = useState(false);
+    const { cinema, refreshCinema }      = useCinema();
+    const [isLoading, setIsLoading]      = useState(false);
+    const [coordinates, setCoordinates]  = useState<[number, number] | null>(null);
 
     useEffect(() => {
         if (cinema?.location?.coordinates) {
@@ -22,31 +21,16 @@ export default function LocationSettings() {
         }
     }, [cinema]);
 
-    useEffect(() => {
-        if (! cinema?.location?.coordinates) {
-            setHasChanges(!! coordinates);
-            return;
-        }
-        if (! coordinates) {
-            setHasChanges(true);
-            return;
-        }
-        const [origLng, origLat] = cinema.location.coordinates;
-        setHasChanges(origLng !== coordinates[0] || origLat !== coordinates[1]);
-    }, [coordinates, cinema]);
-
     const handleSave = async () => {
+        console.log("hello")
         setIsLoading(true);
 
         try {
             await updateCinema({
-                location: coordinates
-                    ? { type: "Point", coordinates }
-                    : { type: "Point", coordinates: [0, 0] },
+                location: coordinates ? { type: "Point", coordinates } : { type: "Point", coordinates: [0, 0] }
             });
             await refreshCinema();
             notifySuccess("Position enregistrée", "La localisation a été mise à jour.");
-            setHasChanges(false);
         } catch (error) {
             console.error("Erreur:", error);
             notifyError("Erreur", "Impossible de sauvegarder la position.");
@@ -91,7 +75,6 @@ export default function LocationSettings() {
                 <Button
                     onClick={() => handleSave()}
                     isLoading={isLoading}
-                    disabled={!hasChanges}
                     className="cursor-pointer"
                 >
                     <Save size={16} />

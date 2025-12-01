@@ -28,7 +28,7 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
             return;
         }
 
-        navigator.geolocation. getCurrentPosition(
+        navigator.geolocation.getCurrentPosition(
             (position) => {
                 setLocation({
                     latitude: position.coords.latitude,

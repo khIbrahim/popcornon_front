@@ -44,16 +44,16 @@ function MapBounds({ bounds }: { bounds: L.LatLngBoundsExpression }) {
 }
 
 export default function CinemasNearby({ userLocation, onClose }: Props) {
-    const { data, isLoading } = usePublicCinemas();
+    const { data, isLoading }                 = usePublicCinemas();
     const [selectedCinema, setSelectedCinema] = useState<PublicCinema | null>(null);
-    const {screenings} = usePublicCinemaById(selectedCinema !== null ? selectedCinema._id : undefined);
-    const [hoveredCinema, setHoveredCinema] = useState<string | null>(null);
+    const {screenings}                        = usePublicCinemaById(selectedCinema !== null ? selectedCinema._id : undefined);
+    const [hoveredCinema, setHoveredCinema]   = useState<string | null>(null);
 
     const cinemas = data ?? [];
 
     const cinemasWithDistance = useMemo(() => {
         return cinemas
-            .filter((c) => c.location?. coordinates && c.location.coordinates[0] !== 0)
+            .filter((c) => c.location?.coordinates && c.location.coordinates.length === 2)
             .map((c) => ({
                 ...c,
                 distance: getDistance(
@@ -66,20 +66,37 @@ export default function CinemasNearby({ userLocation, onClose }: Props) {
             .sort((a, b) => a.distance - b. distance);
     }, [cinemas, userLocation]);
 
-    // Bounds pour la carte
+    console.log(cinemasWithDistance);
+
     const mapBounds = useMemo(() => {
         if (cinemasWithDistance.length === 0) return null;
 
         const points: [number, number][] = [
             [userLocation.latitude, userLocation.longitude],
-            ...cinemasWithDistance.map((c) => [
+            ...cinemasWithDistance.
+            filter(c => c.location?.coordinates && c.location.coordinates.length === 2)
+            .map((c) => [
                 c.location! .coordinates[1],
                 c.location!.coordinates[0],
             ] as [number, number]),
         ];
 
+        if(points.length === 0) {
+            return null;
+        }
+
         return L.latLngBounds(points);
     }, [cinemasWithDistance, userLocation]);
+
+    if(! userLocation?.latitude || ! userLocation?.longitude) {
+        return (
+            <div className="py-12 px-4">
+                <div className="max-w-6xl mx-auto">
+                    <p className="text-center text-slate-500">Activez votre localisation pour voir les cinémas aux alentours.</p>
+                </div>
+            </div>
+        )
+    }
 
     return (
 
@@ -139,7 +156,9 @@ export default function CinemasNearby({ userLocation, onClose }: Props) {
                                     </Marker>
 
                                     {/* Cinema markers */}
-                                    {cinemasWithDistance. map((cinema) => (
+                                    {cinemasWithDistance
+                                        .filter(c => c.location?.coordinates && c.location.coordinates.length === 2)
+                                        .map((cinema) => (
                                         <Marker
                                             key={cinema._id}
                                             position={[

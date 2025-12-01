@@ -31,9 +31,13 @@ function MapController({ center, zoom }: { center: [number, number]; zoom: numbe
 function MapClickHandler({ onClick }: { onClick?: (lat: number, lng: number) => void }) {
     const map = useMap();
     useEffect(() => {
-        if (! onClick) return;
+        if (! onClick) {
+            return;
+        }
+
         const handleClick = (e: L.LeafletMouseEvent) => onClick(e.latlng.lat, e.latlng.lng);
         map.on("click", handleClick);
+
         return () => { map.off("click", handleClick); };
     }, [map, onClick]);
     return null;
@@ -49,11 +53,22 @@ export default function MapView({ center, zoom = 13, markers = [], height = "400
                 />
                 <MapController center={center} zoom={zoom} />
                 <MapClickHandler onClick={onClick} />
-                {markers. map((marker) => (
-                    <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={ICONS[marker.type || "default"]}>
-                        {marker.label && <Popup>{marker. label}</Popup>}
-                    </Marker>
-                ))}
+                {markers
+                    .filter(m =>
+                        typeof m.lat === "number" &&
+                        typeof m.lng === "number" &&
+                        ! isNaN(m.lat) &&
+                        ! isNaN(m.lng)
+                    )
+                    .map(marker => (
+                        <Marker
+                            key={marker.id}
+                            position={[marker.lat, marker.lng]}
+                            icon={ICONS[marker.type || "default"]}
+                        >
+                            {marker.label && <Popup>{marker.label}</Popup>}
+                        </Marker>
+                    ))}
             </MapContainer>
         </div>
     );
