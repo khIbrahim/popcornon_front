@@ -19,40 +19,39 @@ export default function CineDashboardOverview() {
     const { cinema, isLoading: cinemaLoading } = useCinema();
     const { movies, isLoading: moviesLoading } = useMovies();
 
-    // Stats calculées
     const stats = useMemo(() => {
-        const today = new Date(). toISOString(). split("T")[0];
-        const todayMovies = movies. filter(m => m.date === today && m.status === "active");
-        const weekMovies = movies.filter(m => m. status === "active");
+        const today = new Date().toISOString().split("T")[0];
+        const todayMovies = movies.filter(
+            (m) => m.date === today && m.status === "active"
+        );
+        const weekMovies = movies.filter((m) => m.status === "active");
         const totalCapacity = cinema?.capacity || 0;
 
         return {
             todayCount: todayMovies.length,
             weekCount: weekMovies.length,
             totalPlaces: totalCapacity,
-            fillRate: 72, // Placeholder - à calculer avec vrais tickets
+            fillRate: 72,
         };
     }, [movies, cinema]);
 
-    // Données pour le graphique (7 derniers jours)
     const chartData = useMemo(() => {
         const days = [];
         for (let i = 6; i >= 0; i--) {
             const date = new Date();
             date.setDate(date.getDate() - i);
             const dateStr = date.toISOString().split("T")[0];
-            const dayMovies = movies.filter(m => m.date === dateStr);
+            const dayMovies = movies.filter((m) => m.date === dateStr);
 
             days.push({
                 day: date.toLocaleDateString("fr-FR", { weekday: "short" }),
                 seances: dayMovies.length,
-                revenus: dayMovies.reduce((sum, m) => sum + (m.price || 0), 0) * 10, // Simulation
+                revenus: dayMovies.reduce((sum, m) => sum + (m.price || 0), 0) * 10,
             });
         }
         return days;
     }, [movies]);
 
-    // Prochaines séances (aujourd'hui + demain)
     const upcomingScreenings = useMemo(() => {
         const today = new Date().toISOString().split("T")[0];
         const tomorrow = new Date();
@@ -60,20 +59,22 @@ export default function CineDashboardOverview() {
         const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
         return movies
-            .filter(m => (m.date === today || m.date === tomorrowStr) && m.status === "active")
+            .filter(
+                (m) =>
+                    (m.date === today || m.date === tomorrowStr) && m.status === "active"
+            )
             .sort((a, b) => {
-                if (a.date !== b.date) return a.date. localeCompare(b.date);
-                return a.time. localeCompare(b.time);
+                if (a.date !== b.date) return a.date.localeCompare(b.date);
+                return (a.time || "").localeCompare(b.time || "");
             })
-            . slice(0, 5);
+            .slice(0, 5);
     }, [movies]);
 
-    // Films populaires (par note)
     const popularMovies = useMemo(() => {
-        return [... movies]
-            .filter(m => m. status === "active")
+        return [...movies]
+            .filter((m) => m.status === "active")
             .sort((a, b) => (b.voteAverage || 0) - (a.voteAverage || 0))
-            . slice(0, 4);
+            .slice(0, 4);
     }, [movies]);
 
     const isLoading = cinemaLoading || moviesLoading;
@@ -103,7 +104,10 @@ export default function CineDashboardOverview() {
 
                         {/* Upcoming Screenings */}
                         <div>
-                            <UpcomingScreenings screenings={upcomingScreenings} isLoading={isLoading} />
+                            <UpcomingScreenings
+                                screenings={upcomingScreenings}
+                                isLoading={isLoading}
+                            />
                         </div>
                     </div>
 

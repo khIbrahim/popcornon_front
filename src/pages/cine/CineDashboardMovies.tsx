@@ -185,7 +185,7 @@ export default function CineDashboardMovies() {
                     {isLoading ? (
                         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {[... Array(4)].map((_, i) => (
-                                <div key={i} className="aspect-[2/3] rounded-2xl bg-white/5 animate-pulse" />
+                                <div key={i} className="aspect-2/3 rounded-2xl bg-white/5 animate-pulse" />
                             ))}
                         </div>
                     ) : (

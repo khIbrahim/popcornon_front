@@ -22,13 +22,13 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
         setIsLoading(true);
         setError(null);
 
-        if ( !navigator.geolocation) {
+        if (! navigator.geolocation) {
             setError("La géolocalisation n'est pas supportée par votre navigateur.");
             setIsLoading(false);
             return;
         }
 
-        navigator.geolocation.getCurrentPosition(
+        navigator.geolocation. getCurrentPosition(
             (position) => {
                 setLocation({
                     latitude: position.coords.latitude,

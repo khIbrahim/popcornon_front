@@ -1,16 +1,19 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import type {ReactNode} from "react";
+import { useAuth } from "../hooks/useAuth";
+import type { ReactNode } from "react";
 
 interface ProtectedRouteProps {
     children: ReactNode;
     roles?: string[];
 }
 
-export default function ProtectedRoute({ children, roles }: ProtectedRouteProps) {
+export default function ProtectedRoute({
+    children,
+    roles,
+}: ProtectedRouteProps) {
     const { isLoading, user } = useAuth();
 
-    if (isLoading) {
+    if (isLoading && ! user) {
         return (
             <div className="flex items-center justify-center h-screen text-white">
                 Chargement...
@@ -19,11 +22,11 @@ export default function ProtectedRoute({ children, roles }: ProtectedRouteProps)
     }
 
     if (! user) {
-        return <Navigate to="/auth" replace />;
+        return <Navigate to="/" replace />;
     }
 
-    if (roles && ! roles.includes(user.role)) {
-        return <Navigate to="/auth" replace />;
+    if (roles && !roles.includes(user.role)) {
+        return <Navigate to="/admin/cine-requests" replace />;
     }
 
     return <>{children}</>;

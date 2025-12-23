@@ -1,11 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, X, LogOut, Ticket, Building2 } from "lucide-react";
-import {useAuth} from "../context/AuthContext.tsx";
-import {useNotification} from "../context/NotificationContext.tsx";
+import {
+    Menu,
+    X,
+    LogOut,
+    Ticket,
+    Building2,
+    Mail,
+    TicketIcon,
+    FilmIcon,
+    HomeIcon,
+} from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { useNotification } from "../context/NotificationContext.tsx";
 
 export default function Navbar() {
-    const {notifySuccess} = useNotification();
+    const { notifySuccess } = useNotification();
     const { user, isLoggedIn, logout } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -14,7 +24,10 @@ export default function Navbar() {
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(e.target as Node)
+            ) {
                 setShowDropdown(false);
             }
         };
@@ -23,9 +36,15 @@ export default function Navbar() {
     }, []);
 
     const navLinks = [
-        { label: "Films", href: "/movies" },
-        { label: "Cinémas", href: "/cinemas" },
-        { label: "Devenir partenaire", href: "/become-partner" },
+        { label: "Accueil", icon: HomeIcon, href: "/" },
+        { label: "Films", icon: FilmIcon, href: "/movies" },
+        { label: "Cinémas", icon: TicketIcon, href: "/cinemas" },
+        {
+            label: "Devenir partenaire",
+            icon: Mail,
+            href: "/become-partner",
+            show: false,
+        },
     ];
 
     const handleLogout = async () => {
@@ -35,22 +54,29 @@ export default function Navbar() {
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-white/5">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-black backdrop-blur-xl border-b border-white/5">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 {/* Logo */}
                 <a href="/" className="flex items-center gap-2">
-                    <span className="text-3xl">🍿</span>
-                    <span className="text-2xl font-black text-white">PopcornON</span>
+          <span className="text-2xl font-black ">
+            <img className="h-8" src="/logo.png" alt="logo" />
+          </span>
                 </a>
 
                 {/* Desktop Links */}
                 <ul className="hidden md:flex items-center gap-10">
                     {navLinks.map((link) => (
-                        <li key={link.href}>
+                        <li
+                            key={link.href}
+                            className={
+                                user?.role === "admin" && link.show === false ? "hidden" : ""
+                            }
+                        >
                             <a
                                 href={link.href}
                                 className="text-sm font-semibold text-slate-300 hover:text-red-500 transition"
                             >
+                                <link.icon className="inline-block mr-2" size={16} />
                                 {link.label}
                             </a>
                         </li>
@@ -65,32 +91,51 @@ export default function Navbar() {
                                 onClick={() => setShowDropdown(!showDropdown)}
                                 className="flex items-center gap-3 hover:scale-105 transition cursor-pointer"
                             >
-                                <span className="text-sm font-medium text-white">Bonjour, {user.firstName}</span>
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
-                                    {user.firstName[0]}{user.lastName[0]}
+                <span className="text-sm font-medium text-white">
+                  Bonjour, {user.firstName}
+                </span>
+                                <div className="w-10 h-10 rounded-full bg-linear-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                                    {user.firstName[0]}
+                                    {user.lastName[0]}
                                 </div>
                             </button>
 
                             {showDropdown && (
                                 <div className="absolute right-0 mt-3 w-64 py-2 rounded-2xl bg-[#0a0a0f] border border-white/10 shadow-2xl">
                                     <div className="px-4 py-3 border-b border-white/10">
-                                        <p className="font-semibold">{user.firstName} {user.lastName}</p>
-                                        <p className="text-xs text-slate-400">{user.role === "cine" ? "Cinéma" : "Utilisateur"}</p>
+                                        <p className="font-semibold">
+                                            {user.firstName} {user.lastName}
+                                        </p>
+                                        <p className="text-xs text-slate-400">
+                                            {user.role === "cine" ? "Cinéma" : "Utilisateur"}
+                                        </p>
                                     </div>
-                                    <button onClick={() => alert("Dans les prochaines mises à jours")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer">
+                                    <button
+                                        onClick={() => alert("Dans les prochaines mises à jours")}
+                                        className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer"
+                                    >
                                         <Ticket size={18} /> Mes réservations
                                     </button>
                                     {(user.role === "cine" || user.role === "admin") && (
-                                        <button onClick={() => navigate("/dashboard")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer">
+                                        <button
+                                            onClick={() => navigate("/dashboard")}
+                                            className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer"
+                                        >
                                             <Building2 size={18} /> Dashboard cinéma
                                         </button>
                                     )}
-                                    {(user.role === "admin") && (
-                                        <button onClick={() => navigate("/admin/cine-requests")} className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer">
+                                    {user.role === "admin" && (
+                                        <button
+                                            onClick={() => navigate("/admin/cine-requests")}
+                                            className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 cursor-pointer"
+                                        >
                                             <Building2 size={18} /> Cine Requests
                                         </button>
                                     )}
-                                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left text-rose-400 hover:bg-rose-500/10 flex items-center gap-3 cursor-pointer">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full px-4 py-3 text-left text-rose-400 hover:bg-rose-500/10 flex items-center gap-3 cursor-pointer"
+                                    >
                                         <LogOut size={18} /> Déconnexion
                                     </button>
                                 </div>
@@ -99,7 +144,7 @@ export default function Navbar() {
                     ) : (
                         <button
                             onClick={() => navigate("/login")}
-                            className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold hover:scale-105 transition shadow-lg shadow-red-500/30 cursor-pointer"
+                            className="px-6 py-3 bg-linear-to-r from-red-600 to-red-600 rounded-xl font-bold hover:scale-105 transition shadow-lg shadow-red-500/30 cursor-pointer"
                         >
                             Connexion / Inscription
                         </button>
@@ -117,14 +162,20 @@ export default function Navbar() {
                 <div className="md:hidden absolute top-16 inset-x-0 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/10">
                     <div className="px-6 py-6 space-y-6">
                         {navLinks.map((link) => (
-                            <a key={link.href} href={link.href} className="block text-lg font-semibold text-white">
+                            <a
+                                key={link.href}
+                                href={link.href}
+                                className={`block text-lg font-semibold text-white ${
+                                    user?.role === "admin" && link.show === false ? "hidden" : ""
+                                }`}
+                            >
                                 {link.label}
                             </a>
                         ))}
-                        {! isLoggedIn && (
+                        {!isLoggedIn && (
                             <button
                                 onClick={() => navigate("/login")}
-                                className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl font-bold cursor-pointer"
+                                className="w-full py-4 bg-red-600 rounded-xl font-bold cursor-pointer"
                             >
                                 Connexion / Inscription
                             </button>

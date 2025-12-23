@@ -6,10 +6,10 @@ import {
     X,
     LogOut,
     ChevronLeft,
-    Home
+    Home,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { logout } from "../../../Api/endpoints/auth";
 import classNames from "../../../utils/utils";
 
@@ -53,20 +53,24 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
                 )}
             >
                 {/* Header */}
-                <div className={classNames(
-                    "flex h-14 items-center border-b border-white/5 px-4",
-                    isCollapsed ? "justify-center" : "justify-between"
-                )}>
-                    {! isCollapsed && (
+                <div
+                    className={classNames(
+                        "flex h-14 items-center border-b border-white/5 px-4",
+                        isCollapsed ? "justify-center" : "justify-between"
+                    )}
+                >
+                    {!isCollapsed && (
                         <NavLink to="/" className="flex items-center gap-2">
-                            <span className="text-xl font-bold">
-                                <span className="text-red-500">🍿</span> PopcornON
-                            </span>
+              <span className="text-xl font-bold">
+                <span className="text-red-500">🍿</span> PopcornON
+              </span>
                         </NavLink>
                     )}
 
                     {isCollapsed && (
-                        <NavLink to="/" className="text-xl">🍿</NavLink>
+                        <NavLink to="/" className="text-xl">
+                            🍿
+                        </NavLink>
                     )}
 
                     {/* Close mobile */}
@@ -102,7 +106,7 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
 
                 {/* Navigation */}
                 <nav className="flex-1 p-3 space-y-1">
-                    {NAV_ITEMS. map((item) => (
+                    {NAV_ITEMS.map((item) => (
                         <NavLink
                             key={item.to}
                             to={item.to}
@@ -111,18 +115,21 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
                             className={({ isActive }) =>
                                 classNames(
                                     "flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200",
-                                    isCollapsed ?  "justify-center p-3" : "px-4 py-3",
+                                    isCollapsed ? "justify-center p-3" : "px-4 py-3",
                                     isActive
                                         ? "bg-red-500/10 text-red-400"
                                         : "text-slate-400 hover:bg-white/5 hover:text-white"
                                 )
                             }
-                            title={isCollapsed ? item. label : undefined}
+                            title={isCollapsed ? item.label : undefined}
                         >
                             {({ isActive }) => (
                                 <>
-                                    <item.icon size={18} className={isActive ? "text-red-500" : ""} />
-                                    {! isCollapsed && (
+                                    <item.icon
+                                        size={18}
+                                        className={isActive ? "text-red-500" : ""}
+                                    />
+                                    {!isCollapsed && (
                                         <>
                                             <span className="flex-1">{item.label}</span>
                                             {isActive && (
@@ -141,7 +148,7 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
                             to="/"
                             className={classNames(
                                 "flex items-center gap-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-white/5 hover:text-white transition-colors",
-                                isCollapsed ?  "justify-center p-3" : "px-4 py-3"
+                                isCollapsed ? "justify-center p-3" : "px-4 py-3"
                             )}
                             title={isCollapsed ? "Retour au site" : undefined}
                         >
@@ -153,10 +160,11 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
 
                 {/* User section */}
                 <div className="border-t border-white/5 p-3">
-                    {isCollapsed ?  (
+                    {isCollapsed ? (
                         <div className="flex flex-col items-center gap-2">
                             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-xs font-bold text-white">
-                                {user?.firstName?.[0]}{user?.lastName?.[0]}
+                                {user?.firstName?.[0]}
+                                {user?.lastName?.[0]}
                             </div>
                             <button
                                 onClick={handleLogout}
@@ -169,7 +177,8 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
                     ) : (
                         <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/[0.02]">
                             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                                {user?. firstName?.[0]}{user?.lastName?.[0]}
+                                {user?.firstName?.[0]}
+                                {user?.lastName?.[0]}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-white truncate">

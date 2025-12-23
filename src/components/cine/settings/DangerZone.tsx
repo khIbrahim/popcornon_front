@@ -2,10 +2,13 @@ import { useState } from "react";
 import { AlertTriangle, Trash2, Power, CheckCircle } from "lucide-react";
 import Button from "../ui/Button";
 import Modal from "../dashboard/modal/Modal";
-import { updateCinemaStatus, deleteCinema } from "../../../Api/endpoints/cinemas";
+import {
+    updateCinemaStatus,
+    deleteCinema,
+} from "../../../Api/endpoints/cinemas";
 import { useNotification } from "../../../context/NotificationContext";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { useCinema } from "../../../context/CinemaContext";
 
 export default function DangerZone() {
@@ -24,7 +27,7 @@ export default function DangerZone() {
     const isPending = cinema?.status === "pending";
 
     const activateCinema = async () => {
-        if (! cinema) {
+        if (!cinema) {
             return;
         }
 
@@ -32,7 +35,10 @@ export default function DangerZone() {
         try {
             await updateCinemaStatus("active");
             await refreshCinema();
-            notifySuccess("Cinéma activé", "Votre cinéma est maintenant visible publiquement.");
+            notifySuccess(
+                "Cinéma activé",
+                "Votre cinéma est maintenant visible publiquement."
+            );
         } catch (error) {
             console.error("Erreur:", error);
             notifyError("Erreur", "Impossible d'activer le cinéma.");
@@ -43,7 +49,7 @@ export default function DangerZone() {
     };
 
     const suspendCinema = async () => {
-        if (! cinema) {
+        if (!cinema) {
             return;
         }
 
@@ -51,7 +57,10 @@ export default function DangerZone() {
         try {
             await updateCinemaStatus("suspended");
             await refreshCinema();
-            notifySuccess("Cinéma désactivé", "Votre page n'est plus visible publiquement.");
+            notifySuccess(
+                "Cinéma désactivé",
+                "Votre page n'est plus visible publiquement."
+            );
         } catch (error) {
             console.error("Erreur:", error);
             notifyError("Erreur", "Impossible de désactiver le cinéma.");
@@ -70,12 +79,12 @@ export default function DangerZone() {
     };
 
     const handleDelete = async () => {
-        if(! cinema){
+        if (!cinema) {
             notifyError("Erreur", "Cinéma introuvable.");
             return;
         }
 
-        if(confirmText !== (cinema?.name || "")) {
+        if (confirmText !== (cinema?.name || "")) {
             notifyError("Erreur", "Le nom du cinéma ne correspond pas.");
             return;
         }
@@ -101,13 +110,26 @@ export default function DangerZone() {
     const cinemaName = cinema?.name || "votre cinéma";
 
     const statusConfig = {
-        active: { label: "Actif", color: "text-emerald-400", bg: "bg-emerald-500/10" },
-        suspended: { label: "Désactivé", color: "text-orange-400", bg: "bg-orange-500/10" },
-        pending: { label: "En attente", color: "text-amber-400", bg: "bg-amber-500/10" },
+        active: {
+            label: "Actif",
+            color: "text-emerald-400",
+            bg: "bg-emerald-500/10",
+        },
+        suspended: {
+            label: "Désactivé",
+            color: "text-orange-400",
+            bg: "bg-orange-500/10",
+        },
+        pending: {
+            label: "En attente",
+            color: "text-amber-400",
+            bg: "bg-amber-500/10",
+        },
     };
 
-    const currentStatus =
-        cinema?.status ? statusConfig[cinema.status as "active" | "suspended" | "pending"] : null;
+    const currentStatus = cinema?.status
+        ? statusConfig[cinema.status as "active" | "suspended" | "pending"]
+        : null;
 
     if (isLoading) {
         return (
@@ -130,8 +152,8 @@ export default function DangerZone() {
                     </div>
                     <div className="p-6 space-y-4">
                         <p className="text-sm text-slate-300">
-                            Pour publier <strong className="text-white">{cinemaName}</strong> et le rendre visible publiquement,
-                            vous devez l’activer.
+                            Pour publier <strong className="text-white">{cinemaName}</strong>{" "}
+                            et le rendre visible publiquement, vous devez l’activer.
                         </p>
                         <ul className="text-sm text-slate-400 space-y-1 list-disc list-inside">
                             <li>Votre page publique deviendra accessible</li>
@@ -160,13 +182,17 @@ export default function DangerZone() {
                             <AlertTriangle size={18} />
                             Zone dangereuse
                         </h3>
-                        <p className="text-sm text-slate-500 mt-1">Actions sensibles. Procédez avec précaution.</p>
+                        <p className="text-sm text-slate-500 mt-1">
+                            Actions sensibles. Procédez avec précaution.
+                        </p>
                     </div>
 
                     <div className="p-6 space-y-4">
                         <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5">
                             <div>
-                                <p className="text-sm font-medium text-white">Supprimer définitivement</p>
+                                <p className="text-sm font-medium text-white">
+                                    Supprimer définitivement
+                                </p>
                                 <p className="text-xs text-slate-500 mt-1">
                                     Toutes vos données seront supprimées. Irréversible.
                                 </p>
@@ -196,13 +222,14 @@ export default function DangerZone() {
                         <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
                             <p className="text-sm text-red-400 flex items-start gap-2">
                                 <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                                Cette action supprimera définitivement votre cinéma, tous vos films, séances et
-                                données associées.
+                                Cette action supprimera définitivement votre cinéma, tous vos
+                                films, séances et données associées.
                             </p>
                         </div>
 
                         <p className="text-sm text-slate-300">
-                            Pour confirmer, tapez <strong className="text-white">{cinemaName}</strong> ci-dessous :
+                            Pour confirmer, tapez{" "}
+                            <strong className="text-white">{cinemaName}</strong> ci-dessous :
                         </p>
 
                         <input
@@ -246,7 +273,9 @@ export default function DangerZone() {
             {/* Statut actuel */}
             <div className="rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden">
                 <div className="px-6 py-4 border-b border-white/5">
-                    <h3 className="text-base font-semibold text-white">Statut du cinéma</h3>
+                    <h3 className="text-base font-semibold text-white">
+                        Statut du cinéma
+                    </h3>
                 </div>
                 <div className="p-6">
                     <div className="flex items-center justify-between">
@@ -260,7 +289,9 @@ export default function DangerZone() {
                             </div>
                             <div>
                                 <p className="font-medium text-white">{cinemaName}</p>
-                                <p className={`text-sm ${currentStatus?.color}`}>{currentStatus?.label}</p>
+                                <p className={`text-sm ${currentStatus?.color}`}>
+                                    {currentStatus?.label}
+                                </p>
                             </div>
                         </div>
                         <span
@@ -279,7 +310,9 @@ export default function DangerZone() {
                         <AlertTriangle size={18} />
                         Zone dangereuse
                     </h3>
-                    <p className="text-sm text-slate-500 mt-1">Actions sensibles. Procédez avec précaution.</p>
+                    <p className="text-sm text-slate-500 mt-1">
+                        Actions sensibles. Procédez avec précaution.
+                    </p>
                 </div>
 
                 <div className="p-6 space-y-4">
@@ -312,7 +345,9 @@ export default function DangerZone() {
                     {/* Supprimer */}
                     <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5">
                         <div>
-                            <p className="text-sm font-medium text-white">Supprimer définitivement</p>
+                            <p className="text-sm font-medium text-white">
+                                Supprimer définitivement
+                            </p>
                             <p className="text-xs text-slate-500 mt-1">
                                 Toutes vos données seront supprimées. Irréversible.
                             </p>
@@ -361,7 +396,11 @@ export default function DangerZone() {
                     )}
 
                     <div className="flex justify-end gap-2 pt-4 border-t border-white/5">
-                        <Button variant="ghost" onClick={() => setIsStatusModalOpen(false)} className={"cursor-pointer"}>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setIsStatusModalOpen(false)}
+                            className={"cursor-pointer"}
+                        >
                             Annuler
                         </Button>
                         <Button
@@ -374,7 +413,9 @@ export default function DangerZone() {
                                     : "border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 cursor-pointer"
                             }
                         >
-                            {isActive ? "Confirmer la désactivation" : "Confirmer l'activation"}
+                            {isActive
+                                ? "Confirmer la désactivation"
+                                : "Confirmer l'activation"}
                         </Button>
                     </div>
                 </div>
@@ -393,13 +434,14 @@ export default function DangerZone() {
                     <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
                         <p className="text-sm text-red-400 flex items-start gap-2">
                             <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                            Cette action supprimera définitivement votre cinéma, tous vos films, séances et
-                            données associées.
+                            Cette action supprimera définitivement votre cinéma, tous vos
+                            films, séances et données associées.
                         </p>
                     </div>
 
                     <p className="text-sm text-slate-300">
-                        Pour confirmer, tapez <strong className="text-white">{cinemaName}</strong> ci-dessous :
+                        Pour confirmer, tapez{" "}
+                        <strong className="text-white">{cinemaName}</strong> ci-dessous :
                     </p>
 
                     <input

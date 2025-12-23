@@ -8,13 +8,16 @@ import HeroSection from "../components/partner/HeroSection.tsx";
 import Avantages from "../components/partner/Avantages.tsx";
 
 import { checkAuth } from "../Api/endpoints/auth";
-import { createCineRequest, getCineStatus  } from "../Api/endpoints/cineRequest.ts";
+import {
+    createCineRequest,
+    getCineStatus,
+} from "../Api/endpoints/cineRequest.ts";
 import type { CineStatus } from "../types/cineRequest.ts";
 
 import {
     type User,
     type HallForm,
-    type FormState
+    type FormState,
 } from "../types/become_partner";
 
 import BecomePartnerProgressBar from "../components/partner/BecomePartnerProgressBar";
@@ -25,10 +28,11 @@ import BecomePartnerNavigationButtons from "../components/partner/BecomePartnerN
 import BecomePartnerLoadingSpinner from "../components/partner/BecomePartnerLoadingSpinner";
 import BecomePartnerStep1Info from "../components/partner/BecomePartnerStep1Info";
 import BecomePartnerStep2Halls from "../components/partner/BecomePartnerStep2Halls";
+import { useAuth } from "../hooks/useAuth";
 
 export default function BecomePartnerPage() {
     const navigate = useNavigate();
-
+    const { isAdmin } = useAuth();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState<User | null>(null);
 
@@ -49,11 +53,11 @@ export default function BecomePartnerPage() {
         email: "",
         website: "",
         capacity: 0,
-        motivation: ""
+        motivation: "",
     });
 
     const [halls, setHalls] = useState<HallForm[]>([
-        { name: "Salle 1", capacity: 100, type: "standard" }
+        { name: "Salle 1", capacity: 100, type: "standard" },
     ]);
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -63,7 +67,7 @@ export default function BecomePartnerPage() {
 
     const pageState = useMemo(() => {
         if (isLoading) return "loading";
-        if (! isLoggedIn) return "auth_required";
+        if (!isLoggedIn) return "auth_required";
         if (submitSuccess) return "success";
         if (user?.role === "cine") return "already_partner";
         if (status === "pending") return "pending";
@@ -75,7 +79,7 @@ export default function BecomePartnerPage() {
         const init = async () => {
             try {
                 const auth = await checkAuth();
-                if (! auth.success) {
+                if (!auth.success) {
                     setIsLoading(false);
                     return;
                 }
@@ -112,8 +116,8 @@ export default function BecomePartnerPage() {
             {
                 name: `Salle ${prev.length + 1}`,
                 capacity: 100,
-                type: "standard"
-            }
+                type: "standard",
+            },
         ]);
     };
 
@@ -136,7 +140,8 @@ export default function BecomePartnerPage() {
         const newErrors: Record<string, string> = {};
 
         if (step === 1) {
-            if (! form.cinemaName.trim()) newErrors.cinemaName = "Le nom du cinéma est requis";
+            if (!form.cinemaName.trim())
+                newErrors.cinemaName = "Le nom du cinéma est requis";
             if (!form.address.trim()) newErrors.address = "L'adresse est requise";
             if (!form.city.trim()) newErrors.city = "La ville est requise";
             if (!form.phone.trim()) newErrors.phone = "Le téléphone est requis";
@@ -152,7 +157,8 @@ export default function BecomePartnerPage() {
 
             halls.forEach((hall, i) => {
                 if (!hall.name.trim()) newErrors[`hall_${i}_name`] = "Nom requis";
-                if (hall.capacity < 1) newErrors[`hall_${i}_capacity`] = "Capacité invalide";
+                if (hall.capacity < 1)
+                    newErrors[`hall_${i}_capacity`] = "Capacité invalide";
             });
         }
 
@@ -173,7 +179,7 @@ export default function BecomePartnerPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (! validateStep(currentStep)) return;
+        if (!validateStep(currentStep)) return;
 
         setIsSubmitting(true);
 
@@ -208,6 +214,10 @@ export default function BecomePartnerPage() {
         }
     };
 
+    if (isAdmin) {
+        return;
+    }
+
     // Rendu selon l'état
     const renderContent = () => {
         switch (pageState) {
@@ -216,9 +226,7 @@ export default function BecomePartnerPage() {
 
             case "auth_required":
                 return (
-                    <BecomePartnerAuthRequiredCard
-                        onLogin={() => navigate("/auth")}
-                    />
+                    <BecomePartnerAuthRequiredCard onLogin={() => navigate("/auth")} />
                 );
 
             case "already_partner":
@@ -316,9 +324,7 @@ export default function BecomePartnerPage() {
                 <Avantages />
 
                 <section className="px-4">
-                    <div className="max-w-2xl mx-auto">
-                        {renderContent()}
-                    </div>
+                    <div className="max-w-2xl mx-auto">{renderContent()}</div>
                 </section>
             </main>
 

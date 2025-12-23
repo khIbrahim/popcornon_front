@@ -10,7 +10,10 @@ interface Props {
 
 export default function MovieModal({ movie, onClose }: Props) {
     const { data, isLoading } = useMovieDetail(movie._id);
+    console.log('Movie detail data:', data);
+
     const screenings = data?.screenings ?? [];
+    console.log('Screenings:', screenings);
     const [selectedScreening, setSelectedScreening] = useState<string | null>(null);
 
     const backdropUrl = movie. backdrop ? `https://image.tmdb.org/t/p/w1280${movie.backdrop}` : null;

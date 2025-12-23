@@ -7,11 +7,14 @@ import {
     Mail,
     Phone,
     Users,
-    LayoutGrid
+    LayoutGrid,
 } from "lucide-react";
 
-import {getAllCineRequests, reviewCineRequest} from "../../Api/endpoints/cineRequest.ts";
-import {useNotification} from "../../context/NotificationContext.tsx";
+import {
+    getAllCineRequests,
+    reviewCineRequest,
+} from "../../Api/endpoints/cineRequest.ts";
+import { useNotification } from "../../context/NotificationContext.tsx";
 import Navbar from "../../components/Navbar.tsx";
 import Footer from "../../components/Footer.tsx";
 
@@ -36,51 +39,55 @@ interface CineRequest {
     status: RequestStatus;
     createdAt: string;
 
-    user: {
+    user?: {
         firstName: string;
         lastName: string;
         email: string;
-    };
+    } | null;
 }
 
 export default function CineRequestsPage() {
     const [requests, setRequests] = useState<CineRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [filter, setFilter] = useState<"all" | RequestStatus>("pending");
-    const {notifySuccess, notifyError} = useNotification();
+    const [filter, setFilter] = useState<RequestStatus | "all">("pending");
+    const { notifySuccess, notifyError } = useNotification();
 
-    useEffect(() => {
-        const fetchRequests = async () => {
-            setIsLoading(true);
-            try {
-                const data = await getAllCineRequests(filter === "all" ? undefined : filter);
+    const fetchRequests = async () => {
+        setIsLoading(true);
+        try {
+            const data = await getAllCineRequests(
+                filter === "all" ? undefined : filter
+            );
 
-                if (data.success) {
-                    setRequests(data.data);
-                }
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setIsLoading(false);
+            if (data.success) {
+                setRequests(data.data);
             }
-        };
-
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
         fetchRequests();
     }, [filter]);
-
-
     const handleReview = async (id: string, status: "approved" | "rejected") => {
-        const adminNote = status === "rejected" ? prompt("Raison du refus (optionnel) :") || "" : "";
+        const adminNote =
+            status === "rejected"
+                ? prompt("Raison du refus (optionnel) :") || ""
+                : "";
 
         try {
             const res = await reviewCineRequest(id, status, adminNote);
             if (res.success) {
-                setRequests(prev =>
-                    prev.map(r => r._id === id ? { ...r, status } : r)
+                notifySuccess(
+                    `Demande ${
+                        status === "approved" ? "approuvée" : "refusée"
+                    } avec succès.`
                 );
-                notifySuccess(`Demande ${status === "approved" ? "approuvée" : "refusée"} avec succès.`);
+
+                await fetchRequests();
             } else {
-                console.error("Failed to review request:", res.message);
                 notifyError("Échec de la mise à jour de la demande.");
             }
         } catch (err) {
@@ -88,14 +95,11 @@ export default function CineRequestsPage() {
         }
     };
 
-
     return (
         <div>
             <Navbar />
             <div className="min-h-screen bg-slate-950 text-white p-6 pt-24">
-
                 <div className="max-w-5xl mx-auto">
-
                     {/* Header */}
                     <div className="mb-8">
                         <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -109,10 +113,10 @@ export default function CineRequestsPage() {
 
                     {/* Filters */}
                     <div className="flex gap-2 mb-6">
-                        {["all", "pending", "approved", "rejected"].map(f => (
+                        {["all", "pending", "approved", "rejected"].map((f) => (
                             <button
                                 key={f}
-                                onClick={() => setFilter(f as any)}
+                                onClick={() => setFilter(f as RequestStatus | "all")}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                                     filter === f
                                         ? "bg-red-600 text-white"
@@ -139,12 +143,14 @@ export default function CineRequestsPage() {
 
                     {/* Empty */}
                     {!isLoading && requests.length === 0 && (
-                        <div className="text-center py-12 text-slate-500">Aucune demande trouvée</div>
+                        <div className="text-center py-12 text-slate-500">
+                            Aucune demande trouvée
+                        </div>
                     )}
 
                     {/* List */}
                     <div className="space-y-4">
-                        {requests.map(req => (
+                        {requests.map((req) => (
                             <div
                                 key={req._id}
                                 className="p-5 rounded-xl bg-slate-900 border border-slate-800"
@@ -154,8 +160,11 @@ export default function CineRequestsPage() {
                                     <div>
                                         <h3 className="text-lg font-semibold">{req.cinemaName}</h3>
                                         <p className="text-sm text-slate-400">
-                                            Par {req.user.firstName} {req.user.lastName} •{" "}
-                                            {new Date(req.createdAt).toLocaleDateString("fr-FR")}
+                                            Par{" "}
+                                            {req.user
+                                                ? `${req.user.firstName} ${req.user.lastName}`
+                                                : "Utilisateur inconnu"}{" "}
+                                            • {new Date(req.createdAt).toLocaleDateString("fr-FR")}
                                         </p>
                                     </div>
 
@@ -168,12 +177,12 @@ export default function CineRequestsPage() {
                                                     : "bg-rose-500/20 text-rose-400"
                                         }`}
                                     >
-                                    {req.status === "pending"
-                                        ? "En attente"
-                                        : req.status === "approved"
-                                            ? "Approuvée"
-                                            : "Refusée"}
-                                </span>
+                    {req.status === "pending"
+                        ? "En attente"
+                        : req.status === "approved"
+                            ? "Approuvée"
+                            : "Refusée"}
+                  </span>
                                 </div>
 
                                 {/* Info grid */}
@@ -185,7 +194,7 @@ export default function CineRequestsPage() {
 
                                     <div className="flex items-center gap-2">
                                         <Mail size={14} className="text-slate-500" />
-                                        {req.email || req.user.email}
+                                        {req.email || (req.user ? req.user.email : "N/A")}
                                     </div>
 
                                     {req.phone && (
@@ -220,7 +229,10 @@ export default function CineRequestsPage() {
                                 {/* Description */}
                                 {req.description && (
                                     <p className="text-sm text-slate-400 mb-4">
-                                        <span className="font-medium text-slate-300">Description :</span> <br />
+                    <span className="font-medium text-slate-300">
+                      Description :
+                    </span>{" "}
+                                        <br />
                                         {req.description}
                                     </p>
                                 )}
@@ -232,7 +244,8 @@ export default function CineRequestsPage() {
                                         <ul className="space-y-1">
                                             {req.halls.map((h, i) => (
                                                 <li key={i} className="text-slate-400">
-                                                    🎬 <strong>{h.name}</strong> — {h.capacity} places ({h.type})
+                                                    🎬 <strong>{h.name}</strong> — {h.capacity} places (
+                                                    {h.type})
                                                 </li>
                                             ))}
                                         </ul>
@@ -263,7 +276,6 @@ export default function CineRequestsPage() {
                         ))}
                     </div>
                 </div>
-
             </div>
             <Footer />
         </div>

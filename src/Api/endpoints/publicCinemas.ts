@@ -1,4 +1,3 @@
-// src/Api/endpoints/publicCinemas.ts
 import axiosConfig from "../config";
 import type {
     PublicCinemaScreening,
