@@ -27,16 +27,12 @@ export interface BasicUserI {
 
   phone?:             string;
 
-  role:               USER_TYPES;
-  email_verified_at:  boolean;
+  role?:              string;
 
   is_active?:         boolean;
 
   full_name?:         string;
   is_locked?:         boolean;
-
-  lastLoginAt?:       string | null;
-  lastLoginIP?:       string | null;
 
   createdAt:          string;
   updatedAt:          string;

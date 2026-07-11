@@ -94,11 +94,11 @@ export default function Navbar() {
                                 className="flex items-center gap-3 hover:scale-105 transition cursor-pointer"
                             >
                 <span className="text-sm font-medium text-white">
-                  Bonjour, {user.firstName}
+                  Bonjour, {user.first_name}
                 </span>
                                 <div className="w-10 h-10 rounded-full bg-linear-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
-                                    {user.firstName[0]}
-                                    {user.lastName[0]}
+                                    {user.first_name[0]}
+                                    {user.last_name[0]}
                                 </div>
                             </button>
 
@@ -106,7 +106,7 @@ export default function Navbar() {
                                 <div className="absolute right-0 mt-3 w-64 py-2 rounded-2xl bg-[#0a0a0f] border border-white/10 shadow-2xl">
                                     <div className="px-4 py-3 border-b border-white/10">
                                         <p className="font-semibold">
-                                            {user.firstName} {user.lastName}
+                                            {user.first_name} {user.last_name}
                                         </p>
                                         <p className="text-xs text-slate-400">
                                             {user.role === "cine" ? "Cinéma" : "Utilisateur"}

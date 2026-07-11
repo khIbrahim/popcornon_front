@@ -54,28 +54,21 @@ export const registerUserSchema = z
     }) as z.ZodObject<MyZodType<RegisterUserI>>;
 
 export const basicUserSchema = z.object({
-  _id: mongodbIdSchema,
+    id: z.number(),
 
-  email: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
+    email: z.string(),
+    first_name: z.string(),
+    last_name:  z.string(),
+    full_name:  z.string(),
 
-  phone: z.string().optional(),
+    phone:     z.string().nullish(),
 
-  role: z.enum(["user", "admin", "cine"]),
-  isEmailVerified: z.boolean(),
+    role:      z.enum(["client", "admin", "cine"]),
+    is_active: z.number(),
 
-  isActive: z.boolean().optional(),
-
-  lastLoginAt: z.string().nullable().optional(),
-  lastLoginIP: z.string().nullable().optional(),
-
-  createdAt: z.string(),
-  updatedAt: z.string(),
-
-  fullName: z.string().optional(),
-  isLocked: z.boolean().optional(),
-}) as z.ZodObject<MyZodType<BasicUserI>>;
+    created_at: z.string(),
+    updated_at: z.string(),
+}) as unknown as z.ZodObject<MyZodType<BasicUserI>>;
 
 export const userSchema = basicUserSchema.extend({
   passwordChangedAt: z.string().optional(),
