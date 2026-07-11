@@ -22,6 +22,8 @@ export default function Navbar() {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
+    console.log("is logged in ? ", isLoggedIn);
+
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (

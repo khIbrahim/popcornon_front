@@ -21,7 +21,7 @@ export function useAuth(): AuthContextType {
         try {
             await dispatch(refreshAuth()).unwrap();
         } catch {
-            // silently handle refresh errors - state will be updated by thunk
+            //NOOP
         }
     }, [dispatch]);
 
@@ -40,7 +40,6 @@ export function useAuth(): AuthContextType {
         }
     }, [dispatch]);
 
-    // Initialize auth on app load
     useEffect(() => {
         refresh();
     }, [refresh]);

@@ -1,77 +1,87 @@
+import axios from "axios";
 import { userSchema } from "../../validations/user";
 import axiosConfig from "../config";
-import type { LoginUserI, RegisterUserI, UserI } from "../../types/user.ts";
-import type { ResponseI } from "../../types/response";
+import type { LoginUserI, RegisterUserI } from "../../types/user";
 
-const getToken = () => sessionStorage.getItem("token") ?? localStorage.getItem("token");
+type AuthFailure = {
+  success: false;
+  message: string;
+  errors: Record<string, string[]> | null;
+};
 
-export async function login({
-  email,
-  password,
-  rememberMe
-}: LoginUserI & { rememberMe?: boolean }) {
+function handleAuthError(error: unknown): AuthFailure {
+  if (axios.isAxiosError(error)) {
+    return {
+      success: false,
+      message:
+          error.response?.data?.message ??
+          "Une erreur serveur est survenue.",
+      errors: error.response?.data?.errors ?? null,
+    };
+  }
+
+  return {
+    success: false,
+    message: "Une erreur réseau est survenue. Veuillez réessayer.",
+    errors: null,
+  };
+}
+
+function saveToken(token: string, rememberMe = false) {
   sessionStorage.removeItem("token");
   localStorage.removeItem("token");
 
+  if (rememberMe) {
+    localStorage.setItem("token", token);
+    console.log(localStorage.getItem("token"), 'localstorgae');
+  } else {
+    sessionStorage.setItem("token", token);
+    console.log(sessionStorage.getItem('token'), 'session storage')
+  }
+}
+
+function getToken() {
+  return sessionStorage.getItem("token") ?? localStorage.getItem("token");
+}
+
+export async function login({
+                              email,
+                              password,
+                              rememberMe,
+                            }: LoginUserI & { rememberMe?: boolean }) {
   try {
-    const response = await axiosConfig.post<ResponseI<UserI>>("/auth/login", {
+    const response = await axiosConfig.post("/api/login", {
       email,
-      password
+      password,
     });
 
     const data = response.data;
 
-    if (data.success && data.data) {
-      const validatedUser = userSchema.parse(data.data);
-
-      if (data.token) {
-        if (rememberMe) {
-          localStorage.setItem("token", data.token);
-        }
-        sessionStorage.setItem("token", data.token);
-      }
-
-      return { ...data, data: validatedUser };
+    if (data.success && data.token) {
+      saveToken(data.token, rememberMe);
     }
 
     return data;
-
-  } catch (error: any) {
-    if (error.response) {
-      return {
-        success: false,
-        message: error.response.data?.message || "Unknown server error",
-        errors: error.response.data?.errors || null,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Une erreur réseau est survenue. Veuillez réessayer.",
-      errors: null,
-    };
+  } catch (error: unknown) {
+    return handleAuthError(error);
   }
 }
 
 export async function register({
-  email,
-  password,
-  confirmPassword,
-  firstName,
-  lastName,
-  phone,
-  acceptTerms,
-  rememberMe,
-}: RegisterUserI) {
-
-  sessionStorage.removeItem("token");
-  localStorage.removeItem("token");
-
+                                 email,
+                                 password,
+                                 confirmPassword,
+                                 firstName,
+                                 lastName,
+                                 phone,
+                                 acceptTerms,
+                                 rememberMe,
+                               }: RegisterUserI) {
   try {
-    const response = await axiosConfig.post<ResponseI<UserI>>("/auth/register", {
+    const response = await axiosConfig.post("/api/register", {
       email,
       password,
-      confirmPassword,
+      password_confirmation: confirmPassword,
       firstName,
       lastName,
       phone,
@@ -80,77 +90,66 @@ export async function register({
 
     const data = response.data;
 
-    if (data.success && data.data) {
-      const validatedUser = userSchema.parse(data.data);
-
-      if (data.token) {
-        if (rememberMe) {
-          localStorage.setItem("token", data.token);
-        }
-
-        sessionStorage.setItem("token", data.token);
-      }
-
-      return { ...data, data: validatedUser };
+    if (data.success && data.token) {
+      saveToken(data.token, rememberMe);
     }
 
     return data;
-  } catch (error: any) {
-    if (error.response) {
-      return {
-        success: false,
-        message: error.response.data?.message || "Unknown server error",
-        errors: error.response.data?.errors || null,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Une erreur réseau est survenue. Veuillez réessayer.",
-      errors: null,
-    };
+  } catch (error: unknown) {
+    return handleAuthError(error);
   }
 }
 
-export function logout() {
-  sessionStorage.removeItem("token");
-  localStorage.removeItem("token");
-  return { success: true, message: "Logged out successfully" };
+export async function logout() {
+  try {
+    await axiosConfig.post("/api/logout");
+
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
+
+    return {
+      success: true,
+      message: "Déconnexion réussie",
+    };
+  } catch (error: unknown) {
+    return handleAuthError(error);
+  }
 }
 
 export async function checkAuth() {
   const token = getToken();
 
+  console.log("Token avant /api/user: ", token);
+
   if (! token) {
     return {
       success: false,
-      message: "Non authentifié"
+      message: "Non authentifié",
+      errors: null,
     };
   }
 
   try {
-    const response = await axiosConfig.get<ResponseI<UserI>>("/auth/me");
-    const data = response.data;
+    const response = await axiosConfig.get("/api/user");
 
-    if (data.success && data.data) {
-      const validatedUser = userSchema.parse(data.data);
-      return {
-        ...data,
-        data: validatedUser
-      };
-    }
+    console.log("response /api/user : ", response.data);
 
-    logout();
+    const user = userSchema.parse(response.data.data);
+
     return {
-      success: false,
-      message: "Invalid token"
+      success: true,
+      message: "Authentifié",
+      data: user,
     };
+  } catch (error) {
+    console.log("Err checkAuth : ", error);
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
 
-  } catch (err) {
-    logout();
     return {
       success: false,
-      message: "Not authenticated"
+      message: "Non authentifié",
+      errors: null,
     };
   }
 }

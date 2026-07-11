@@ -19,29 +19,27 @@ export interface RegisterUserI {
 }
 
 export interface BasicUserI {
-  _id: string;
+  id:                 string;
 
-  email: string;
-  firstName: string;
-  lastName: string;
+  email:              string;
+  first_name:         string;
+  last_name:          string;
 
-  phone?: string;
+  phone?:             string;
 
-  role: USER_TYPES;
-  isEmailVerified: boolean;
+  role:               USER_TYPES;
+  email_verified_at:  boolean;
 
-  isActive?: boolean;
+  is_active?:         boolean;
 
-  fullName?: string;
-  isLocked?: boolean;
+  full_name?:         string;
+  is_locked?:         boolean;
 
-  lastLoginAt?: string | null;
-  lastLoginIP?: string | null;
+  lastLoginAt?:       string | null;
+  lastLoginIP?:       string | null;
 
-  cinemaId?: string;
-
-  createdAt: string;
-  updatedAt: string;
+  createdAt:          string;
+  updatedAt:          string;
 }
 
 export interface UserI extends BasicUserI {
