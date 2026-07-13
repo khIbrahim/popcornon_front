@@ -34,7 +34,7 @@ export interface MovieFormData {
 
 export function createMovieFromTMDB(movie: TMDBMovie, formData: MovieFormData): Omit<Movie, '_id'> {
     return {
-        tmdbId: movie. id,
+        tmdb_id: movie. id,
         title: movie.title,
         originalTitle: movie.original_title,
         overview: movie.overview,
@@ -43,7 +43,7 @@ export function createMovieFromTMDB(movie: TMDBMovie, formData: MovieFormData): 
         releaseDate: movie.release_date,
         runtime: movie.runtime,
         genres: movie. genres?.map(g => g.name) || [],
-        voteAverage: movie.vote_average,
+        vote_average: movie.vote_average,
         status: formData.status,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

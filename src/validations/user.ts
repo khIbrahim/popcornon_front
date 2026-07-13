@@ -59,7 +59,7 @@ export const basicUserSchema = z.object({
     email: z.string(),
     first_name: z.string(),
     last_name:  z.string(),
-    full_name:  z.string(),
+    name:  z.string(),
 
     phone:     z.string().nullish(),
 

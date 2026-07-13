@@ -24,11 +24,11 @@ export interface CinemaScreening {
     _id: string;
     movie: {
         _id: string;
-        tmdbId: number;
+        tmdb_id: number;
         title: string;
         poster: string;
         runtime: number;
-        voteAverage: number;
+        vote_average: number;
         genres: string[];
     };
     date: string;

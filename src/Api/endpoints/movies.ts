@@ -27,14 +27,14 @@ export async function getMyMovies(params?: {
         query.append("status", params.status);
     }
 
-    const res = await axiosConfig.get(`/movies?${query}`);
+    const res = await axiosConfig.get(`/api/movies?${query}`);
     return res.data;
 }
 
 // @ts-ignore
 export async function createMovie(data: Partial<Movie>): Promise<Movie & { success: boolean; data: Movie }> {
     try {
-        const res = await axiosConfig.post<Movie & { success: boolean; data: Movie }>(`/movies`, data);
+        const res = await axiosConfig.post<Movie & { success: boolean; data: Movie }>(`/api/movies`, data);
 
         console.log(res);
 
@@ -60,7 +60,7 @@ export async function updateMovie(
     id: string,
     data: Partial<Movie>
 ): Promise<Movie & { success: boolean; data: Movie }> {
-    const res = await axiosConfig.patch<Movie & { success: boolean; data: Movie }>(`/movies/${id}`, data);
+    const res = await axiosConfig.patch<Movie & { success: boolean; data: Movie }>(`/api/movies/${id}`, data);
 
     return res.data;
 }
@@ -68,12 +68,12 @@ export async function updateMovie(
 export async function deleteMovie(
     id: string
 ): Promise<{ success: boolean; message: string }> {
-    const res = await axiosConfig.delete<{ success: boolean; message: string }>(`/movies/${id}`);
+    const res = await axiosConfig.delete<{ success: boolean; message: string }>(`/api/movies/${id}`);
 
     return res.data;
 }
 
 export async function archiveExpiredMovies(): Promise<{ success: boolean; archived: number }> {
-    const res = await axiosConfig.post("/movies/archive-expired");
+    const res = await axiosConfig.post("/api/movies/archive-expired");
     return res.data;
 }
