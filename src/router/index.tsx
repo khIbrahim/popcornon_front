@@ -1,7 +1,6 @@
 import ProtectedRoute from "../components/ProtectedRoute";
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import CineRequestsPage from "../pages/admin/CineRequestsPage.tsx";
 import CineDashboardOverview from "../pages/cine/CineDashboardOverview.tsx";
 import CineDashboardMovies from "../pages/cine/CineDashboardMovies.tsx";
 import BecomePartnerPage from "../pages/BecomePartnerPage";
@@ -16,6 +15,7 @@ import PrivacyPage from "../pages/PrivacyPage.tsx";
 import LocationMapPage from "../pages/LocationMapPage.tsx";
 import AdminLayout from "../layouts/AdminLayout.tsx";
 import AdminOverview from "../pages/admin/AdminOverview.tsx";
+import ICineRequestsPage from "../pages/admin/ICineRequestsPage.tsx";
 
 export const router = createBrowserRouter([
     { path: "/", element: <App /> },
@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
 
     {
         path: "/admin/cine-requests",
-        element: <CineRequestsPage />,
+        element: <ICineRequestsPage />,
     },
 
     { path: "/become-partner", element: <BecomePartnerPage /> },

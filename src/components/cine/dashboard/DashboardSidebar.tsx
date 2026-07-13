@@ -177,12 +177,12 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
                     ) : (
                         <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/[0.02]">
                             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                                {user?.firstName?.[0]}
-                                {user?.lastName?.[0]}
+                                {user?.first_name?.[0]}
+                                {user?.last_name?.[0]}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-white truncate">
-                                    {user?.firstName} {user?.lastName}
+                                    {user?.first_name} {user?.last_name}
                                 </p>
                                 <p className="text-[11px] text-slate-500 truncate">
                                     {user?.email}

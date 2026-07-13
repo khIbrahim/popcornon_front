@@ -186,29 +186,12 @@ export default function BecomePartnerPage() {
         try {
             const payload = { ...form, halls };
 
-            // @ts-ignore
             const result = await createCineRequest(payload);
-
-            if (result.success) {
-                setSubmitSuccess(true);
-                setData(result.data);
-                // @ts-ignore
-                setStatus(result.status);
-            } else {
-                const formatted: Record<string, string> = {};
-
-                if (result.errors?.length) {
-                    result.errors.forEach((e: any) => {
-                        const clean = e.field.replace("body.", "");
-                        formatted[clean] = e.message;
-                    });
-                    setErrors(formatted);
-                } else {
-                    setErrors({ form: result.message || "Une erreur est survenue" });
-                }
-            }
-        } catch {
-            setErrors({ form: "Erreur de connexion au serveur" });
+            setSubmitSuccess(true);
+            setData(result);
+            setStatus("pending");
+        } catch(error) {
+            setErrors({ form: error.message });
         } finally {
             setIsSubmitting(false);
         }
@@ -226,7 +209,7 @@ export default function BecomePartnerPage() {
 
             case "auth_required":
                 return (
-                    <BecomePartnerAuthRequiredCard onLogin={() => navigate("/auth")} />
+                    <BecomePartnerAuthRequiredCard onLogin={() => navigate("/login")} />
                 );
 
             case "already_partner":

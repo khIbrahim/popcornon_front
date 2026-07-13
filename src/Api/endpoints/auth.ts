@@ -33,10 +33,8 @@ function saveToken(token: string, rememberMe = false) {
 
   if (rememberMe) {
     localStorage.setItem("token", token);
-    console.log(localStorage.getItem("token"), 'localstorgae');
   } else {
     sessionStorage.setItem("token", token);
-    console.log(sessionStorage.getItem('token'), 'session storage')
   }
 }
 
@@ -50,7 +48,7 @@ export async function login({
                               rememberMe,
                             }: LoginUserI & { rememberMe?: boolean }) {
   try {
-    const response = await axiosConfig.post("/api/login", {
+    const response = await axiosConfig.post("/login", {
       email,
       password,
     });
@@ -78,7 +76,7 @@ export async function register({
                                  rememberMe,
                                }: RegisterUserI) {
   try {
-    const response = await axiosConfig.post("/api/register", {
+    const response = await axiosConfig.post("/register", {
       email,
       password,
       password_confirmation: confirmPassword,
@@ -102,7 +100,7 @@ export async function register({
 
 export async function logout() {
   try {
-    await axiosConfig.post("/api/logout");
+    await axiosConfig.post("/logout");
 
     sessionStorage.removeItem("token");
     localStorage.removeItem("token");
@@ -119,8 +117,6 @@ export async function logout() {
 export async function checkAuth() {
   const token = getToken();
 
-  console.log("Token avant /api/user: ", token);
-
   if (! token) {
     return {
       success: false,
@@ -130,9 +126,7 @@ export async function checkAuth() {
   }
 
   try {
-    const response = await axiosConfig.get("/api/user");
-
-    console.log("response /api/user : ", response.data);
+    const response = await axiosConfig.get("/user");
 
     const user = userSchema.parse(response.data.data);
 
@@ -142,7 +136,6 @@ export async function checkAuth() {
       data: user,
     };
   } catch (error) {
-    console.log("Err checkAuth : ", error);
     sessionStorage.removeItem("token");
     localStorage.removeItem("token");
 
