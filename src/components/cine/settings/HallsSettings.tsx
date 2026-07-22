@@ -6,12 +6,14 @@ import { useNotification } from "../../../context/NotificationContext";
 import { useHalls } from "../../../hooks/useHalls";
 import type { CinemaHall } from "../../../types/halls";
 import { HALL_TYPES } from "../../../types/halls";
+import { useCinema } from "../../../context/CinemaContext";
 
 
 type CinemaHallForm = Omit<CinemaHall, "id">;
 
 export default function HallsSettings() {
     const { notifySuccess, notifyError } = useNotification();
+    const { refreshCinema } = useCinema();
 
     const {
         halls,
@@ -63,12 +65,12 @@ export default function HallsSettings() {
         setIsModalOpen(true);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
             if (editingIndex !== null) {
-                update({
+                await update({
                     ...halls[editingIndex],
                     ...form,
                 });
@@ -78,13 +80,15 @@ export default function HallsSettings() {
                     "Les modifications ont bien été enregistrées."
                 );
             } else {
-                create(form);
+                await create(form);
 
                 notifySuccess(
                     "Salle ajoutée",
                     "Nouvelle salle créée."
                 );
             }
+
+            await refreshCinema();
 
             setIsModalOpen(false);
 

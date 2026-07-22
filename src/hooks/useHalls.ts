@@ -42,15 +42,15 @@ export function useHalls() {
     });
 
     const create = (hall: Omit<CinemaHall, "id">) => {
-        createMutation.mutate(hall);
+        return createMutation.mutateAsync(hall);
     };
 
     const update = (hall: CinemaHall) => {
-        updateMutation.mutate(hall);
+        return updateMutation.mutateAsync(hall);
     };
 
     const remove = (id: number) => {
-        deleteMutation.mutate(id);
+        return deleteMutation.mutateAsync(id);
     };
 
     return {
