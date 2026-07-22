@@ -7,32 +7,36 @@ import { useHalls } from "../../../hooks/useHalls";
 import type { CinemaHall } from "../../../types/halls";
 import { HALL_TYPES } from "../../../types/halls";
 
+
+type CinemaHallForm = Omit<CinemaHall, "id">;
+
 export default function HallsSettings() {
     const { notifySuccess, notifyError } = useNotification();
 
     const {
         halls,
-        setHalls,
         isLoading,
         isSaving,
         error,
-        save
+        create,
+        update,
+        remove,
     } = useHalls();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<CinemaHallForm>({
         name: "",
         capacity: 100,
-        type: "standard" as CinemaHall["type"],
+        type: "standard",
     });
 
     useEffect(() => {
-        if (!isModalOpen && editingIndex !== null && halls) {
+        if (!isModalOpen && editingIndex !== null && halls?.[editingIndex]) {
             setForm(halls[editingIndex]);
         }
-    }, [halls]);
+    }, [halls, editingIndex,isModalOpen]);
 
     if (isLoading) {
         return <p className="text-slate-500">Chargement…</p>;
@@ -48,8 +52,14 @@ export default function HallsSettings() {
     };
 
     const openEditModal = (hall: CinemaHall, index: number) => {
+        if (!hall) return;
+
         setEditingIndex(index);
-        setForm(hall);
+        setForm({
+            name: hall.name,
+            capacity: hall.capacity,
+            type: hall.type,
+        });
         setIsModalOpen(true);
     };
 
@@ -57,39 +67,45 @@ export default function HallsSettings() {
         e.preventDefault();
 
         try {
-            let newHalls: CinemaHall[];
-
             if (editingIndex !== null) {
-                newHalls = halls!.map((h, i) =>
-                    i === editingIndex ? form : h
+                update({
+                    ...halls[editingIndex],
+                    ...form,
+                });
+
+                notifySuccess(
+                    "Salle modifiée",
+                    "Les modifications ont bien été enregistrées."
                 );
-
-                notifySuccess("Salle modifiée", "Les modifications ont bien été enregistrées.");
             } else {
-                newHalls = [...halls!, form];
+                create(form);
 
-                notifySuccess("Salle ajoutée", "Nouvelle salle créée.");
+                notifySuccess(
+                    "Salle ajoutée",
+                    "Nouvelle salle créée."
+                );
             }
 
-            setHalls(newHalls);
+            setIsModalOpen(false);
 
-            save(newHalls);
-        } catch (err) {
+        } catch {
             notifyError("Erreur", "Impossible d’enregistrer.");
         }
-
-        setIsModalOpen(false);
     };
 
-    const handleDelete = (index: number) => {
+    const handleDelete = (hall: CinemaHall) => {
         try {
-            setHalls(prev => prev!.filter((_, i) => i !== index));
+            remove(hall.id);
 
-            save(halls.filter((_, i) => i !== index));
-
-            notifySuccess("Salle supprimée", "Suppression réussie.");
-        } catch (err) {
-            notifyError("Erreur", "Impossible de supprimer la salle.");
+            notifySuccess(
+                "Salle supprimée",
+                "Suppression réussie."
+            );
+        } catch {
+            notifyError(
+                "Erreur",
+                "Impossible de supprimer la salle."
+            );
         }
     };
 
@@ -126,7 +142,6 @@ export default function HallsSettings() {
                         Ajouter
                     </Button>
                 </div>
-
                 <div className="divide-y divide-white/5">
                     {halls.map((hall, index) => {
                         const Icon = getTypeIcon(hall.type);
@@ -139,7 +154,8 @@ export default function HallsSettings() {
                                     <div>
                                         <p className="text-sm font-medium text-white">{hall.name}</p>
                                         <p className="text-xs text-slate-500 flex items-center gap-2">
-                                            <Users size={12} />
+                                            <Users size={12}
+ />
                                             {hall.capacity} places
                                             <span className="px-1.5 py-0.5 rounded-md bg-white/5 text-[10px] uppercase">
                                                 {hall.type}
@@ -155,7 +171,7 @@ export default function HallsSettings() {
                                         <Edit3 size={16} />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(index)}
+                                        onClick={() => handleDelete(hall)}
                                         className="p-2 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer"
                                     >
                                         <Trash2 size={16} />
@@ -188,7 +204,7 @@ export default function HallsSettings() {
                         <label className="text-sm font-medium text-slate-300">Nom de la salle</label>
                         <input
                             type="text"
-                            value={form.name}
+                            value={form?.name ??""}
                             onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
                             className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-red-500/50 focus:ring-2 focus:ring-red-500/20"
                             required
@@ -200,8 +216,7 @@ export default function HallsSettings() {
                         <input
                             type="number"
                             min={1}
-                            value={form.capacity}
-                            onChange={e => setForm(prev => ({ ...prev, capacity: Number(e.target.value) }))}
+                            value={form?.capacity ?? 0}                            onChange={e => setForm(prev => ({ ...prev, capacity: Number(e.target.value) }))}
                             className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-red-500/50 focus:ring-2 focus:ring-red-500/20"
                             required
                         />
@@ -216,7 +231,7 @@ export default function HallsSettings() {
                                     type="button"
                                     onClick={() => setForm(prev => ({ ...prev, type: type.value as CinemaHall["type"] }))}
                                     className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all cursor-pointer ${
-                                        form.type === type.value
+                                        form?.type === type.value
                                             ? "bg-red-500/10 border-red-500/50 text-red-400"
                                             : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
                                     }`}

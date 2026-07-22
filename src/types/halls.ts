@@ -8,7 +8,8 @@ export const HALL_TYPES = [
 ];
 
 export interface CinemaHall {
-    name: string;
+    id:       number;
+    name:     string;
     capacity: number;
     type: "standard" | "vip" | "imax" | "3d";
 }

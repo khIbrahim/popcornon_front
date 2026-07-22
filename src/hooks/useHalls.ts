@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCinemaHalls, updateCinemaHalls } from "../Api/endpoints/cinemas";
+import {getCinemaHalls, createCinemaHall, updateCinemaHall, deleteCinemaHall,} from "../Api/endpoints/cinemas";
 import { useEffect, useState } from "react";
 import type { CinemaHall } from "../types/halls";
 
@@ -20,17 +20,37 @@ export function useHalls() {
         }
     }, [data]);
 
-    const mutation = useMutation({
-        mutationFn: (updatedHalls: CinemaHall[]) =>
-            updateCinemaHalls(updatedHalls),
-
+    const createMutation = useMutation({
+        mutationFn: createCinemaHall,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["halls"] });
         },
     });
 
-    const save = (hallsToSave: CinemaHall[]) => {
-        mutation.mutate(hallsToSave);
+    const updateMutation = useMutation({
+        mutationFn: updateCinemaHall,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["halls"] });
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: deleteCinemaHall,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["halls"] });
+        },
+    });
+
+    const create = (hall: Omit<CinemaHall, "id">) => {
+        createMutation.mutate(hall);
+    };
+
+    const update = (hall: CinemaHall) => {
+        updateMutation.mutate(hall);
+    };
+
+    const remove = (id: number) => {
+        deleteMutation.mutate(id);
     };
 
     return {
@@ -38,7 +58,14 @@ export function useHalls() {
         setHalls,
         isLoading,
         error,
-        save,
-        isSaving: mutation.isPending,
+
+        create,
+        update,
+        remove,
+
+        isSaving:
+            createMutation.isPending ||
+            updateMutation.isPending ||
+            deleteMutation.isPending,
     };
 }

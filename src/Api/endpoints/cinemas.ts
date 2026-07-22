@@ -9,26 +9,44 @@ interface CinemaResponse {
 }
 
 export async function getCinemaHalls(): Promise<{ success: boolean; data: CinemaHall[] }> {
-    const res = await axiosConfig.get<{ success: boolean; data: CinemaHall[] }>(`/cinema/halls`);
+    const res = await axiosConfig.get<{ success: boolean; data: CinemaHall[] }>(`/cinema-halls`);
 
     return res.data;
 }
 
-export async function updateCinemaHalls(
-    halls: CinemaHall[]
-): Promise<{ success: boolean; data: CinemaHall[] }> {
-    try {
-        console.log("données envoyées : ", {halls});
-        const res = await axiosConfig.put<{ success: boolean; data: CinemaHall[] }>(
-            `/cinema/halls`,
-            { halls: halls }
-        );
+export async function createCinemaHall(
+    hall: Omit<CinemaHall, "id">
+): Promise<{ success: boolean; data: CinemaHall }> {
 
-        return res.data;
-    } catch(error: any){
-        console.error("erreur update des salles:", error.response?.data || error.message);
-        throw error;
-    }
+    const res = await axiosConfig.post<{ success: boolean; data: CinemaHall }>(
+        "/cinema-halls",
+        hall
+    );
+
+    return res.data;
+}
+
+export async function updateCinemaHall(
+    hall: CinemaHall
+): Promise<{ success: boolean; data: CinemaHall }> {
+
+    const res = await axiosConfig.put<{ success: boolean; data: CinemaHall }>(
+        `/cinema-halls/${hall.id}`,
+        hall
+    );
+
+    return res.data;
+}
+
+export async function deleteCinemaHall(
+    id: number
+): Promise<{ success: boolean }> {
+
+    const res = await axiosConfig.delete<{ success: boolean }>(
+        `/cinema-halls/${id}`
+    );
+
+    return res.data;
 }
 
 export async function myCinema(): Promise<CinemaResponse> {
@@ -48,7 +66,6 @@ export async function getCinemaOpeningHours(): Promise<{ success: boolean; data:
     const res = await axiosConfig.get<{ success: boolean; data: WeekHours }>(`/cinema/opening-hours`);
     return res.data;
 }
-
 export async function updateCinemaOpeningHours(
     hours: WeekHours
 ): Promise<{ success: boolean; data: WeekHours }> {
