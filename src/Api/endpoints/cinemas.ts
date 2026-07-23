@@ -86,3 +86,18 @@ export async function deleteCinema(): Promise<{ success: boolean }> {
     const res = await axiosConfig.delete("/cinema");
     return res. data;
 }
+
+export async function updateCinemaLocation(
+    latitude: number,
+    longitude: number
+): Promise<{ success: boolean; message: string }> {
+    const res = await axiosConfig.put(
+        "/cinema/location",
+        {
+            latitude,
+            longitude,
+        }
+    );
+
+    return res.data;
+}

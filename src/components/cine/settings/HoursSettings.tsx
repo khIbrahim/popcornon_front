@@ -30,7 +30,7 @@ export default function HoursSettings() {
         try {
             save();
             notifySuccess("Succès", "Horaires mis à jour avec succès.");
-        } catch (e) {
+        } catch ($e) {
             notifyError("Erreur", "Une erreur est survenue lors de la mise à jour des horaires.");
         }
     };

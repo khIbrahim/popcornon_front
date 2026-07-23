@@ -5,6 +5,7 @@ import LocationPicker from "./LocationPicker";
 import { useNotification } from "../../../context/NotificationContext";
 import { useCinema } from "../../../context/CinemaContext";
 import { updateCinema } from "../../../Api/endpoints/cinemas";
+import { updateCinemaLocation } from "../../../Api/endpoints/cinemas";
 
 export default function LocationSettings() {
     const { notifySuccess, notifyError } = useNotification();
@@ -26,9 +27,14 @@ export default function LocationSettings() {
         setIsLoading(true);
 
         try {
-            await updateCinema({
-                location: coordinates ? { type: "Point", coordinates } : { type: "Point", coordinates: [0, 0] }
-            });
+            if (!coordinates) {
+                return;
+            }
+
+            await updateCinemaLocation(
+                coordinates[1], // latitude
+                coordinates[0], // longitude
+            );
             await refreshCinema();
             notifySuccess("Position enregistrée", "La localisation a été mise à jour.");
         } catch (error) {
