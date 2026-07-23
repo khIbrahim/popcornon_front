@@ -6,6 +6,43 @@ import {
 } from "../Api/endpoints/cinemas";
 import {useState, useEffect} from "react";
 
+const defaultHours: WeekHours = {
+    monday: {
+        open: "",
+        close: "",
+        closed: true,
+    },
+    tuesday: {
+        open: "",
+        close: "",
+        closed: true,
+    },
+    wednesday: {
+        open: "",
+        close: "",
+        closed: true,
+    },
+    thursday: {
+        open: "",
+        close: "",
+        closed: true,
+    },
+    friday: {
+        open: "",
+        close: "",
+        closed: true,
+    },
+    saturday: {
+        open: "",
+        close: "",
+        closed: true,
+    },
+    sunday: {
+        open: "",
+        close: "",
+        closed: true,
+    },
+};
 export function useOpeningHours() {
     const queryClient = useQueryClient();
 
@@ -19,12 +56,15 @@ export function useOpeningHours() {
         staleTime: 1000 * 60 * 5,
     });
 
-    const [hours, setHours] = useState<WeekHours | null>(null);
+    const [hours, setHours] = useState<WeekHours>(defaultHours);
     useEffect(() => {
-        if(data?.data && ! hours){
-            setHours(data.data);
+        if (data?.data) {
+            setHours({
+                ...defaultHours,
+                ...data.data,
+            });
         }
-    }, [data]);
+    }, [data]);;
 
     const mutation = useMutation({
         mutationFn: (newHours: WeekHours) => updateCinemaOpeningHours(newHours),
@@ -61,16 +101,16 @@ export function useOpeningHours() {
         value: string | boolean
     ) => {
         setHours(prev => ({
-            ...prev!,
+            ...prev,
             [day]: {
-                ...prev![day],
+                ...prev[day],
                 [field]: value,
             }
         }));
     };
 
     const save = () => {
-        mutation.mutate(hours!);
+        mutation.mutate(hours);
     }
 
     return {
