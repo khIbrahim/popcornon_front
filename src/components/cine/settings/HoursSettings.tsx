@@ -30,7 +30,7 @@ export default function HoursSettings() {
         try {
             save();
             notifySuccess("Succès", "Horaires mis à jour avec succès.");
-        } catch ($e) {
+        } catch {
             notifyError("Erreur", "Une erreur est survenue lors de la mise à jour des horaires.");
         }
     };
@@ -45,7 +45,7 @@ export default function HoursSettings() {
 
     return (
         <div className="space-y-6">
-            <div className="rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden">
+            <div className="rounded-2xl bg-white/2 border border-white/5 overflow-hidden">
                 <div className="px-6 py-4 border-b border-white/5">
                     <h3 className="text-base font-semibold text-white flex items-center gap-2">
                         <Clock size={18} className="text-red-500" />
@@ -78,7 +78,9 @@ export default function HoursSettings() {
                                 <div className="w-9 h-5 rounded-full bg-white/10 peer-checked:bg-red-500/20 relative transition-colors">
                                     <div className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-slate-400 peer-checked:bg-red-500 peer-checked:translate-x-4 transition-all" />
                                 </div>
-                                <span className="text-xs text-slate-500">Fermé</span>
+                                <span className="text-xs text-slate-500">
+                                    {hours[day.key].closed ? "Fermé" : "Ouvert"}
+                                </span>
                             </label>
 
                             {/* Inputs horaires */}

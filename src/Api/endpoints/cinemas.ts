@@ -55,14 +55,12 @@ export async function myCinema(): Promise<CinemaResponse> {
 }
 
 export async function updateCinema(
-    updateData: Partial<Omit<Cinema, "_id" | "screens" | "owner">>
+    updateData: Partial<Omit<Cinema, "id" | "screens" | "owner">>
 ): Promise<CinemaResponse> {
     const res = await axiosConfig.patch<CinemaResponse>(`cinema/`, updateData);
 
     return res.data;
 }
-
-
 
 export async function getCinemaOpeningHours(): Promise<{ success: boolean; data: WeekHours }> {
     const res = await axiosConfig.get<{ success: boolean; data: WeekHours }>(`/cinema/opening-hours`);

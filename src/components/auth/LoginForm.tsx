@@ -1,7 +1,8 @@
 import type { AuthMessage } from "../../lib/types.ts";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { isValidEmail } from "../../lib/validators.ts";
 import { login } from "../../Api/endpoints/auth.ts";
+import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
     isLoading: boolean;
@@ -17,6 +18,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     onLoginFailure
 }) => {
     const formRef = useRef<HTMLFormElement | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -60,7 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     text: res.message || "Échec de la connexion."
                 });
             }
-        } catch (error) {
+        } catch {
             onLoginFailure({
                 type: "error",
                 text: "Une erreur réseau est survenue. Veuillez réessayer."
@@ -93,13 +95,23 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 <label className="text-sm text-gray-300 mb-2 block">
                     Mot de passe
                 </label>
-                <input
-                    type="password"
-                    name="password"
-                    required
-                    className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:outline-none"
-                    placeholder="••••••••"
-                />
+                <div className="relative">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        required
+                        className="w-full px-4 py-3 pr-12 rounded-lg bg-zinc-900 border border-zinc-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:outline-none"
+                        placeholder="••••••••"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword((value) => !value)}
+                        className="absolute inset-y-0 right-0 flex items-center justify-center px-4 text-gray-400 hover:text-white transition"
+                        aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                </div>
             </div>
 
             <div className="flex items-center justify-between">

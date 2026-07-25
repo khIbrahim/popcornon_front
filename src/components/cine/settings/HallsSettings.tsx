@@ -35,7 +35,7 @@ export default function HallsSettings() {
     });
 
     useEffect(() => {
-        if (!isModalOpen && editingIndex !== null && halls?.[editingIndex]) {
+        if (! isModalOpen && editingIndex !== null && halls?.[editingIndex]) {
             setForm(halls[editingIndex]);
         }
     }, [halls, editingIndex,isModalOpen]);
@@ -54,7 +54,9 @@ export default function HallsSettings() {
     };
 
     const openEditModal = (hall: CinemaHall, index: number) => {
-        if (!hall) return;
+        if (! hall) {
+            return;
+        }
 
         setEditingIndex(index);
         setForm({
@@ -97,19 +99,13 @@ export default function HallsSettings() {
         }
     };
 
-    const handleDelete = (hall: CinemaHall) => {
+    const handleDelete = async (hall: CinemaHall) => {
         try {
-            remove(hall.id);
+            await remove(hall.id);
 
-            notifySuccess(
-                "Salle supprimée",
-                "Suppression réussie."
-            );
-        } catch {
-            notifyError(
-                "Erreur",
-                "Impossible de supprimer la salle."
-            );
+            notifySuccess("Salle supprimée", "Suppression réussie.");
+        } catch(error: any) {
+            notifyError("Erreur", error.message ?? "Veuillez réessayez plus tard.");
         }
     };
 

@@ -25,30 +25,46 @@ interface MovieFormProps {
 }
 
 const STATUS_OPTIONS: { value: MovieStatus; label: string }[] = [
-    { value: 'draft', label: '📝 Brouillon' },
-    { value: 'active', label: '✅ Actif' },
-    { value: 'archived', label: '📦 Archivé' },
+    { value: 'draft', label: 'Brouillon' },
+    { value: 'active', label: 'Actif' },
+    { value: 'archived', label: 'Archivé' },
 ];
+
+const formatDateForInput = (value?: string | null): string => {
+    if (! value) {
+        return '';
+    }
+
+    return value.slice(0, 10);
+};
 
 const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: MovieFormProps) => {
     const [selectedMovie, setSelectedMovie] = useState<TMDBMovie | null>(null);
 
     const {halls} = useCinema();
     const hallOptions = halls.map(h => h.name);
-    const [price, setPrice] = useState(initial?.price?.toString() ?? '800');
-    const [time, setTime] = useState(initial?.time ?? '');
-    const [hall, setHall] = useState(initial?.hall ?? 'Chargement');
+    const [price, setPrice]   = useState(initial?.price?.toString() ?? '800');
+    const [time, setTime]     = useState(initial?.time ?? '');
+    const [hall, setHall]     = useState(initial?.hall ?? 'Chargement');
     const [status, setStatus] = useState<MovieStatus>(initial?.status ?? 'draft');
-    const [date, setDate] = useState(
-        initial?.date ?? defaultDate ?? formatDateLocal(new Date())
-    );
+    const [date, setDate]     = useState(() => formatDateForInput(initial?.date) || formatDateForInput(defaultDate) || formatDateLocal(new Date()));
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        if (initial) {
-            setSelectedMovie(createTmdbFromMovie(initial));
+        if (! initial) {
+            return;
         }
+
+        setSelectedMovie(createTmdbFromMovie(initial));
+        setPrice(initial.price?.toString() ?? '800');
+        setTime(initial.time ?? '');
+        setHall(initial.hall ?? '');
+        setStatus(initial.status ?? 'draft');
+        setDate(formatDateForInput(initial.date));
+
+        console.log('Date originale :', initial.date);
+        console.log('Date input :', formatDateForInput(initial.date));
     }, [initial]);
 
     const validate = (): boolean => {
@@ -168,9 +184,9 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
                             </label>
                             <Input
                                 type="date"
-                                min={today}
+                                min={formatDateLocal(new Date())}
                                 value={date}
-                                onChange={(e) => setDate(e.target.value)}
+                                onChange={(event) => setDate(event.target.value)}
                                 className={errors.date ? 'border-rose-500' : ''}
                             />
                             {errors.date && (
