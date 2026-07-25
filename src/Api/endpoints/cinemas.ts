@@ -62,6 +62,8 @@ export async function updateCinema(
     return res.data;
 }
 
+
+
 export async function getCinemaOpeningHours(): Promise<{ success: boolean; data: WeekHours }> {
     const res = await axiosConfig.get<{ success: boolean; data: WeekHours }>(`/cinema/opening-hours`);
     return res.data;

@@ -8,15 +8,15 @@ export interface PublicCinemaHall {
 }
 
 export interface PublicCinemaSocialLinks {
-    facebook?: string;
+    facebook?:  string;
     instagram?: string;
-    twitter?: string;
+    twitter?:   string;
 }
 
 export interface PublicCinemaStats {
-    totalMovies: number;
+    totalMovies:     number;
     totalScreenings: number;
-    totalViews: number;
+    totalViews:      number;
 }
 
 export interface PublicCinema {

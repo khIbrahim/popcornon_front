@@ -4,8 +4,8 @@ import Button from "../ui/Button";
 import LocationPicker from "./LocationPicker";
 import { useNotification } from "../../../context/NotificationContext";
 import { useCinema } from "../../../context/CinemaContext";
-import { updateCinema } from "../../../Api/endpoints/cinemas";
-import { updateCinemaLocation } from "../../../Api/endpoints/cinemas";
+import {updateCinemaLocation} from "../../../Api/endpoints/cinemas.ts";
+
 
 export default function LocationSettings() {
     const { notifySuccess, notifyError } = useNotification();
