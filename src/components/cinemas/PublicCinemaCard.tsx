@@ -1,8 +1,8 @@
 import { MapPin, Users, LayoutGrid } from "lucide-react";
-import type { PublicCinema } from "../../types/publicCinema";
+import type { Cinema } from "../../types/cinema";
 
 interface Props {
-    cinema: PublicCinema;
+    cinema: Cinema;
     onClick: () => void;
 }
 

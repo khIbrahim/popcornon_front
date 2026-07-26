@@ -1,7 +1,7 @@
 import axiosConfig from "../config";
-import type {Cinema} from "../../types/cinema";
-import type {WeekHours} from "../../types/openingHours.ts";
-import type {CinemaHall} from "../../types/halls.ts";
+import type { Cinema } from "../../types/cinema";
+import type { WeekHours } from "../../types/openingHours";
+import type { CinemaHall } from "../../types/halls";
 
 interface CinemaResponse {
     success: boolean;
@@ -9,7 +9,7 @@ interface CinemaResponse {
 }
 
 export async function getCinemaHalls(): Promise<{ success: boolean; data: CinemaHall[] }> {
-    const res = await axiosConfig.get<{ success: boolean; data: CinemaHall[] }>(`/cinema-halls`);
+    const res = await axiosConfig.get<{ success: boolean; data: CinemaHall[] }>("/cinema-halls");
 
     return res.data;
 }
@@ -17,7 +17,6 @@ export async function getCinemaHalls(): Promise<{ success: boolean; data: Cinema
 export async function createCinemaHall(
     hall: Omit<CinemaHall, "id">
 ): Promise<{ success: boolean; data: CinemaHall }> {
-
     const res = await axiosConfig.post<{ success: boolean; data: CinemaHall }>(
         "/cinema-halls",
         hall
@@ -29,7 +28,6 @@ export async function createCinemaHall(
 export async function updateCinemaHall(
     hall: CinemaHall
 ): Promise<{ success: boolean; data: CinemaHall }> {
-
     const res = await axiosConfig.put<{ success: boolean; data: CinemaHall }>(
         `/cinema-halls/${hall.id}`,
         hall
@@ -41,7 +39,6 @@ export async function updateCinemaHall(
 export async function deleteCinemaHall(
     id: number
 ): Promise<{ success: boolean }> {
-
     const res = await axiosConfig.delete<{ success: boolean }>(
         `/cinema-halls/${id}`
     );
@@ -50,54 +47,106 @@ export async function deleteCinemaHall(
 }
 
 export async function myCinema(): Promise<CinemaResponse> {
-    const res = await axiosConfig.get<CinemaResponse>(`/cinema/me`);
+    const res = await axiosConfig.get<CinemaResponse>("/cinema/me");
+
     return res.data;
 }
 
 export async function updateCinema(
     updateData: Partial<Omit<Cinema, "id" | "screens" | "owner">>
 ): Promise<CinemaResponse> {
-    const res = await axiosConfig.patch<CinemaResponse>(`cinema/`, updateData);
+    const res = await axiosConfig.patch<CinemaResponse>(
+        "/cinema",
+        updateData
+    );
 
     return res.data;
 }
 
 export async function getCinemaOpeningHours(): Promise<{ success: boolean; data: WeekHours }> {
-    const res = await axiosConfig.get<{ success: boolean; data: WeekHours }>(`/cinema/opening-hours`);
+    const res = await axiosConfig.get<{ success: boolean; data: WeekHours }>(
+        "/cinema/opening-hours"
+    );
+
     return res.data;
 }
+
 export async function updateCinemaOpeningHours(
     hours: WeekHours
-    ): Promise<{ success: boolean; data: WeekHours }> {
+): Promise<{ success: boolean; data: WeekHours }> {
     const res = await axiosConfig.put<{ success: boolean; data: WeekHours }>(
-        `/cinema/opening-hours`,
+        "/cinema/opening-hours",
         hours
     );
 
     return res.data;
 }
 
-export async function updateCinemaStatus(status: "active" | "suspended"): Promise<{ success: boolean }> {
+export async function updateCinemaStatus(
+    status: "active" | "suspended"
+): Promise<{ success: boolean }> {
     const res = await axiosConfig.patch("/cinema/status", { status });
+
     return res.data;
 }
 
 export async function deleteCinema(): Promise<{ success: boolean }> {
     const res = await axiosConfig.delete("/cinema");
-    return res. data;
+
+    return res.data;
 }
 
 export async function updateCinemaLocation(
     latitude: number,
     longitude: number
 ): Promise<{ success: boolean; message: string }> {
-    const res = await axiosConfig.put(
-        "/cinema/location",
-        {
-            latitude,
-            longitude,
-        }
-    );
+    const res = await axiosConfig.put("/cinema/location", {
+        latitude,
+        longitude,
+    });
+
+    return res.data;
+}
+
+export async function getSignedPublicCinemaUrl(): Promise<{
+    success: boolean;
+    url: string;
+}> {
+    const res = await axiosConfig.get<{
+        success: boolean;
+        url: string;
+    }>("/cinemas/sign");
+
+    return res.data;
+}
+
+export async function getSignedPublicCinemaShowUrl(
+    id: number
+): Promise<{
+    success: boolean;
+    url: string;
+}> {
+    const res = await axiosConfig.get<{
+        success: boolean;
+        url: string;
+    }>(`/cinemas/${id}/sign`);
+
+    return res.data;
+}
+
+
+export async function getPublicCinemas() {
+    const { url } = await getSignedPublicCinemaUrl();
+
+    const res = await axiosConfig.get(url);
+
+    return res.data;
+}
+
+export async function getPublicCinema(id: number) {
+    const { url } = await getSignedPublicCinemaShowUrl(id);
+
+    const res = await axiosConfig.get(url);
 
     return res.data;
 }

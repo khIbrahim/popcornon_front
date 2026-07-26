@@ -2,7 +2,7 @@ import type {CinemaHall} from "./halls.ts";
 import type {WeekHours} from "./openingHours.ts";
 
 export interface Cinema {
-    _id: string;
+    id: number;
     name: string;
     description?: string;
     address: string;
@@ -11,12 +11,12 @@ export interface Cinema {
     phone?: string;
     email?: string;
     website?: string;
-    coverPhoto?: string;
+    cover_photo?: string;
     capacity: number;
     halls: CinemaHall[];
-    openingHours?: WeekHours;
+    opening_hours?: WeekHours;
     status: "active" | "pending" | "suspended";
-    createdAt: string;
+    created_at: string;
     location: CinemaLocation;
 }
 

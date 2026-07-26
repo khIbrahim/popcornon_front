@@ -1,11 +1,11 @@
 import { Building2 } from "lucide-react";
 import PublicCinemaCard from "./PublicCinemaCard";
-import type { PublicCinema } from "../../types/publicCinema";
+import type { Cinema } from "../../types/cinema";
 
 interface CinemasResultsProps {
     isLoading: boolean;
     isError: boolean;
-    cinemas: PublicCinema[];
+    cinemas: Cinema[];
     selectedWilaya: string;
     onCinemaClick: (cinemaId: string) => void;
 }
@@ -68,9 +68,9 @@ export default function CinemasResults({
                             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {cinemas.map((cinema) => (
                                     <PublicCinemaCard
-                                        key={cinema._id}
+                                        key={cinema.id}
                                         cinema={cinema}
-                                        onClick={() => onCinemaClick(cinema._id)}
+                                        onClick={() => onCinemaClick(cinema.id)}
                                     />
                                 ))}
                             </div>

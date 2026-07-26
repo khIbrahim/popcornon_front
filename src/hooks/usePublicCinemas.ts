@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import {
     getPublicCinemas,
-    getPublicCinemaById,
-    getPublicCinemaByName,
-    searchPublicCinemas,
-} from "../Api/endpoints/publicCinemas";
+    getPublicCinema,
+} from "../Api/endpoints/cinemas";
 import type {
     PublicCinema,
     PublicCinemasListResponse,
@@ -18,7 +16,7 @@ export function usePublicCinemas(filters?: {
 }) {
     const query = useQuery<PublicCinemasListResponse>({
         queryKey: ["public-cinemas", filters],
-        queryFn: () => getPublicCinemas(filters),
+        queryFn: () => getPublicCinemas(),
         staleTime: 1000 * 60 * 5,
     });
 
@@ -30,10 +28,10 @@ export function usePublicCinemas(filters?: {
     };
 }
 
-export function usePublicCinemaById(cinemaId?: string) {
+export function usePublicCinemaById(cinemaId?: number) {
     const query = useQuery<PublicCinemaDetailResponse>({
         queryKey: ["public-cinema", cinemaId],
-        queryFn: () => getPublicCinemaById(cinemaId!),
+        queryFn: () => getPublicCinema(cinemaId!),
         enabled: !!cinemaId,
         staleTime: 1000 * 60 * 5,
     });

@@ -26,7 +26,7 @@ export default function CinemasPage() {
     );
 
     const { cinema: selectedCinema, screenings } = usePublicCinemaById(
-        selectedCinemaId ?? undefined
+        selectedCinemaId ? Number(selectedCinemaId) : undefined
     );
 
     const filteredCinemas = useMemo(() => {
