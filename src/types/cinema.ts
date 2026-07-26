@@ -2,22 +2,22 @@ import type {CinemaHall} from "./halls.ts";
 import type {WeekHours} from "./openingHours.ts";
 
 export interface Cinema {
-    id: number;
-    name: string;
-    description?: string;
-    address: string;
-    city: string;
-    wilaya: string;
-    phone?: string;
-    email?: string;
-    website?: string;
-    cover_photo?: string;
-    capacity: number;
-    halls: CinemaHall[];
+    id:             number;
+    name:           string;
+    description?:   string;
+    address:        string;
+    city:           string;
+    wilaya:         string;
+    phone?:         string;
+    email?:         string;
+    website?:       string;
+    cover_photo?:   string;
+    capacity:       number;
+    halls:          CinemaHall[];
     opening_hours?: WeekHours;
-    status: "active" | "pending" | "suspended";
-    created_at: string;
-    location: CinemaLocation;
+    status:         "active" | "pending" | "suspended";
+    created_at:     string;
+    location:       CinemaLocation;
 }
 
 export interface CinemaScreening {
@@ -41,4 +41,17 @@ export interface CinemaScreening {
 export interface CinemaLocation {
     type: "Point";
     coordinates: [number, number]; // [longitude, latitude]
+}
+
+export interface ListCinemaResponse
+{
+    success: boolean;
+    data:    Cinema[];
+}
+
+export interface CinemaFilters
+{
+    wilaya?: string;
+    city?:   string;
+    q?:      string;
 }

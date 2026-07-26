@@ -1,11 +1,20 @@
 import axiosConfig from "../config";
-import type { Cinema } from "../../types/cinema";
+import type {Cinema, CinemaFilters, ListCinemaResponse} from "../../types/cinema";
 import type { WeekHours } from "../../types/openingHours";
 import type { CinemaHall } from "../../types/halls";
 
 interface CinemaResponse {
     success: boolean;
     data: Cinema;
+}
+
+export async function getCinemas(filters: CinemaFilters): Promise<ListCinemaResponse>
+{
+    const res = await axiosConfig.get<ListCinemaResponse>("/cinemas", {
+        params: filters
+    });
+
+    return res.data;
 }
 
 export async function getCinemaHalls(): Promise<{ success: boolean; data: CinemaHall[] }> {
