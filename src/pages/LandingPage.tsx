@@ -10,6 +10,7 @@ import GeolocationStatus from "../components/landing/GeolocationStatus";
 
 import { useGeolocation } from "../hooks/useGeolocation";
 import CinemasNearby from "../components/landing/CinemasNearBy.tsx";
+import {useCinemas} from "../hooks/useCinemas.ts";
 
 export default function LandingPage() {
     const {
@@ -30,6 +31,8 @@ export default function LandingPage() {
         setShowMap(false);
         resetLocation();
     };
+
+    const {data, isLoading, isError} = useCinemas({});
 
     return (
         <div className="min-h-screen bg-black text-white overflow-x-hidden">

@@ -1,5 +1,6 @@
 import type {CinemaHall} from "./halls.ts";
 import type {WeekHours} from "./openingHours.ts";
+import type {Movie} from "./movie.ts";
 
 export interface Cinema {
     id:             number;
@@ -18,6 +19,7 @@ export interface Cinema {
     status:         "active" | "pending" | "suspended";
     created_at:     string;
     location:       CinemaLocation;
+    movies:         Movie[];
 }
 
 export interface CinemaScreening {
@@ -43,15 +45,42 @@ export interface CinemaLocation {
     coordinates: [number, number]; // [longitude, latitude]
 }
 
-export interface ListCinemaResponse
-{
-    success: boolean;
-    data:    Cinema[];
+export interface CinemaFilters {
+    q?:       string;
+    wilaya?:  string;
+    city?:    string;
+    page?:    number;
+    perPage?: number;
 }
 
-export interface CinemaFilters
-{
-    wilaya?: string;
-    city?:   string;
-    q?:      string;
+export interface PaginationLink {
+    url:    string | null;
+    label:  string;
+    active: boolean;
+}
+
+export interface PaginationLinks {
+    first: string | null;
+    last:  string | null;
+    prev:  string | null;
+    next:  string | null;
+}
+
+export interface PaginationMeta {
+    current_page: number;
+    from:         number | null;
+    last_page:    number;
+    links:        PaginationLink[];
+    path:         string;
+    per_page:     number;
+    to:           number | null;
+    total:        number;
+}
+
+export interface ListCinemaResponse {
+    success: boolean;
+    data:    Cinema[];
+    links:   PaginationLinks;
+    meta:    PaginationMeta;
+    filters: CinemaFilters;
 }

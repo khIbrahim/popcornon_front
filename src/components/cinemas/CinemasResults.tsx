@@ -7,7 +7,7 @@ interface CinemasResultsProps {
     isError: boolean;
     cinemas: Cinema[];
     selectedWilaya: string;
-    onCinemaClick: (cinemaId: string) => void;
+    onCinemaClick: (cinemaId: number) => void;
 }
 
 export default function CinemasResults({

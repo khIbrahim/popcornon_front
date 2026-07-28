@@ -8,13 +8,29 @@ interface CinemaResponse {
     data: Cinema;
 }
 
-export async function getCinemas(filters: CinemaFilters): Promise<ListCinemaResponse>
+export async function getCinemas(filters: CinemaFilters = {}): Promise<ListCinemaResponse>
 {
-    const res = await axiosConfig.get<ListCinemaResponse>("/cinemas", {
-        params: filters
-    });
+    const searchParams = new URLSearchParams();
 
-    return res.data;
+    if(filters?.wilaya){
+        searchParams.append("wilaya", String(filters?.wilaya));
+    }
+
+    if(filters?.q){
+        searchParams.append("q", String(filters?.q));
+    }
+
+    if(filters?.city){
+        searchParams.append("city", String(filters?.city));
+    }
+
+
+    const query = searchParams.toString();
+    const url = query ? `/cinemas?${query}` : "/cinemas";
+
+    const response = await axiosConfig.get<ListCinemaResponse>(url);
+
+    return response.data;
 }
 
 export async function getCinemaHalls(): Promise<{ success: boolean; data: CinemaHall[] }> {

@@ -1,30 +1,17 @@
-import { useMemo, useState } from "react";
-import {
-    X,
-    MapPin,
-    Phone,
-    Mail,
-    Globe,
-    Clock,
-    Users,
-    LayoutGrid,
-    ChevronLeft,
-    ChevronRight,
-    Ticket,
-} from "lucide-react";
-import type {
-    PublicCinema,
-    PublicCinemaScreening,
-} from "../../types/publicCinema";
-import { formatDateLocal, getNext7Days } from "../../utils/date";
+import type {Cinema} from "../../types/cinema.ts";
+import type {Movie} from "../../types/movie.ts";
+import {useMemo, useState} from "react";
+import {formatDateLocal, getNext7Days} from "../../utils/date.ts";
+import type {PublicCinemaScreening} from "../../types/publicCinema.ts";
+import {ChevronLeft, ChevronRight, Clock, Globe, LayoutGrid, Mail, MapPin, Phone, Ticket, Users, X} from "lucide-react";
 
 interface Props {
-    cinema:     PublicCinema;
-    screenings: PublicCinemaScreening[];
+    cinema:     Cinema;
+    screenings: Movie[];
     onClose:    () => void;
 }
 
-const DAYS_FR = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+const DAYS_FR   = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 const MONTHS_FR = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
 
 function isSameDay(a: Date, b: Date) {
@@ -35,7 +22,10 @@ function isSameDay(a: Date, b: Date) {
     );
 }
 
-export default function PublicCinemaDrawer({ cinema, screenings, onClose }: Props) {
+export default function CinemaDrawer({ cinema, screenings, onClose }: Props)
+{
+    console.log("cinema", cinema);
+
     const [weekStart, setWeekStart] = useState(() => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -61,11 +51,15 @@ export default function PublicCinemaDrawer({ cinema, screenings, onClose }: Prop
 
     const groupedByMovie = useMemo(() => {
         const map = new Map<string, PublicCinemaScreening[]>();
+
         screeningsForSelectedDate.forEach((s) => {
             const key = s.movieId;
-            if (!map.has(key)) map.set(key, []);
+            if (! map.has(key)) {
+                map.set(key, []);
+            }
             map.get(key)!.push(s);
         });
+
         return Array.from(map.values());
     }, [screeningsForSelectedDate]);
 
