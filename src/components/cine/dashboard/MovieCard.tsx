@@ -71,7 +71,7 @@ export default function MovieCard({ movie, isDropdownOpen, onDropdownToggle, onE
                     </Button>
                     <Button variant="ghost" className="w-32 text-slate-400 hover:text-white" onClick={onToggleStatus}>
                         <Eye size={14} />
-                        {movie.status === "active" ? "Archiver" : "Activer"}
+                        {movie.status === "active" ? "Brouillon" : "Activer"}
                     </Button>
                     <Button variant="destructive" className="w-32" onClick={onDelete}>
                         <Trash2 size={14} />
@@ -102,7 +102,7 @@ export default function MovieCard({ movie, isDropdownOpen, onDropdownToggle, onE
                             <Edit3 size={14} /> Modifier
                         </button>
                         <button onClick={onToggleStatus} className="w-full px-3 py-2 text-left text-sm text-slate-300 hover:bg-white/5 flex items-center gap-2">
-                            <Eye size={14} /> {movie.status === "active" ? "Archiver" : "Activer"}
+                            <Eye size={14} /> {movie.status === "active" ? "Brouillon" : "Activer"}
                         </button>
                         <button onClick={onDelete} className="w-full px-3 py-2 text-left text-sm text-rose-400 hover:bg-white/5 flex items-center gap-2">
                             <Trash2 size={14} /> Supprimer

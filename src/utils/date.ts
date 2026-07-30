@@ -10,13 +10,15 @@ export function parseLocalDate(dateStr: string): Date {
     return new Date(y, m - 1, d);
 }
 
-export function getNext7Days(): Date[] {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+export function getNext7Days(startDate: Date = new Date()): Date[] {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
 
-    return Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(today);
-        d.setDate(today.getDate() + i);
-        return d;
+    return Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(start);
+        date.setDate(start.getDate() + index);
+
+        return date;
     });
+
 }

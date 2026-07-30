@@ -22,22 +22,46 @@ export interface Cinema {
     movies:         Movie[];
 }
 
+export type CinemaScreeningStatus =
+    | "draft"
+    | "active"
+    | "archived";
+
+export interface CinemaScreeningMovie {
+    id?:         number;
+    _id?:        number;
+    title:       string;
+    overview?:   string | null;
+    poster?:     string | null;
+    runtime:     number;
+    voteAverage: number | null;
+    genres:      string[];
+}
+
+export interface CinemaScreeningHall {
+    id:       number;
+    name:     string;
+    capacity: number;
+    type:     CinemaHall["type"];
+}
+
 export interface CinemaScreening {
-    _id: string;
-    movie: {
-        _id: string;
-        tmdb_id: number;
-        title: string;
-        poster: string;
-        runtime: number;
-        vote_average: number;
-        genres: string[];
-    };
-    date: string;
-    time: string;
-    hall: string;
-    price: number;
-    availableSeats: number;
+    id:       number;
+    startsAt: string;
+    endsAt:   string;
+    price:    string;
+    status:   CinemaScreeningStatus;
+    movie:    CinemaScreeningMovie;
+    hall:     CinemaScreeningHall;
+}
+
+export interface CinemaScreeningFilters {
+    from?: string;
+    to?:   string;
+}
+
+export interface CinemaScreeningsResponse {
+    data: CinemaScreening[];
 }
 
 export interface CinemaLocation {
@@ -83,4 +107,44 @@ export interface ListCinemaResponse {
     links:   PaginationLinks;
     meta:    PaginationMeta;
     filters: CinemaFilters;
+}
+export type ScreeningStatus =
+    | "draft"
+    | "active"
+    | "archived";
+
+export interface ScreeningMoviePayload {
+    tmdb_id:      number;
+    title:        string;
+    overview?:    string | null;
+    poster?:      string | null;
+    runtime:      number;
+    vote_average: number;
+    genres:       string[];
+}
+
+export interface CreateCinemaScreeningPayload {
+    movie:          ScreeningMoviePayload;
+    cinema_hall_id: number;
+    starts_at:      string;
+    price:          number;
+    status:         "draft" | "active";
+}
+
+export interface UpdateCinemaScreeningPayload {
+    movie_id?:          number;
+    cinema_hall_id?:    number;
+    starts_at?:         string;
+    price?:             number;
+    status?: "draft" | "active";
+}
+
+export interface MyCinemaScreeningFilters {
+    date?:   string;
+    status?: ScreeningStatus;
+}
+
+export interface CinemaScreeningResponse {
+    message: string;
+    data:    CinemaScreening;
 }

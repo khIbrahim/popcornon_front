@@ -58,7 +58,7 @@ export default function CinemasPage() {
         ) {
             return;
         }
-
+      
         setPage(newPage);
 
         window.scrollTo({
@@ -108,7 +108,6 @@ export default function CinemasPage() {
             {selectedCinemaId && selectedCinema && (
                 <CinemaDrawer
                     cinema={selectedCinema}
-                    screenings={selectedCinema.movies}
                     onClose={() => setSelectedCinemaId(null)}
                 />
             )}

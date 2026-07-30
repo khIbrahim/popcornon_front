@@ -74,6 +74,6 @@ export async function deleteMovie(
 }
 
 export async function archiveExpiredMovies(): Promise<{ success: boolean; archived: number }> {
-    const res = await axiosConfig.post("/api/movies/archive-expired");
+    const res = await axiosConfig.post("/movies/archive-expired");
     return res.data;
 }

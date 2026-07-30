@@ -7,27 +7,27 @@ import TMDBSearchInput from "../../ui/TMDBSearchInput.tsx";
 
 import type { TMDBMovie } from '../../../../types/tmdb.ts';
 import {
-    createMovieFromTMDB,
     createTmdbFromMovie,
     type Movie,
-    type MovieFormData,
-    type MovieStatus
 } from "../../../../types/movie.ts";
+import type {CreateCinemaScreeningPayload} from "../../../../types/cinema.ts";
 import {useCinema} from "../../../../context/CinemaContext.tsx";
 import {formatDateLocal} from "../../../../utils/date.ts";
 
 interface MovieFormProps {
     initial?: Movie;
     onCancel: () => void;
-    onSubmit: (movie: Omit<Movie, "_id">) => void;
+    onSubmit: (screening: CreateCinemaScreeningPayload) => void;
     isLoading?: boolean;
     defaultDate?: string;
 }
 
-const STATUS_OPTIONS: { value: MovieStatus; label: string }[] = [
-    { value: 'draft', label: 'Brouillon' },
-    { value: 'active', label: 'Actif' },
-    { value: 'archived', label: 'Archivé' },
+const STATUS_OPTIONS: {
+    value: "draft" | "active";
+    label: string;
+}[] = [
+    { value: "draft", label: "Brouillon" },
+    { value: "active", label: "Actif" },
 ];
 
 const formatDateForInput = (value?: string | null): string => {
@@ -42,11 +42,14 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
     const [selectedMovie, setSelectedMovie] = useState<TMDBMovie | null>(null);
 
     const {halls} = useCinema();
-    const hallOptions = halls.map(h => h.name);
     const [price, setPrice]   = useState(initial?.price?.toString() ?? '800');
     const [time, setTime]     = useState(initial?.time ?? '');
-    const [hall, setHall]     = useState(initial?.hall ?? 'Chargement');
-    const [status, setStatus] = useState<MovieStatus>(initial?.status ?? 'draft');
+    const [cinemaHallId, setCinemaHallId] = useState<number>(halls[0]?.id ?? 0);
+    const [status, setStatus] = useState<"draft" | "active">(
+        initial?.status === "active"
+            ? "active"
+            : "draft"
+    );
     const [date, setDate]     = useState(() => formatDateForInput(initial?.date) || formatDateForInput(defaultDate) || formatDateLocal(new Date()));
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -59,19 +62,45 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
         setSelectedMovie(createTmdbFromMovie(initial));
         setPrice(initial.price?.toString() ?? '800');
         setTime(initial.time ?? '');
-        setHall(initial.hall ?? '');
-        setStatus(initial.status ?? 'draft');
         setDate(formatDateForInput(initial.date));
+        setStatus(
+            initial.status === "active"
+                ? "active"
+                : "draft"
+        );
 
         console.log('Date originale :', initial.date);
         console.log('Date input :', formatDateForInput(initial.date));
     }, [initial]);
+
+    useEffect(() => {
+        if (initial) {
+            const currentHall = halls.find(
+                (hall) => hall.name === initial.hall
+            );
+
+            if (currentHall) {
+                setCinemaHallId(currentHall.id);
+                return;
+            }
+        }
+
+        if (halls.length > 0) {
+            setCinemaHallId(halls[0].id);
+        }
+    }, [initial, halls]);
 
     const validate = (): boolean => {
         const newErrors: Record<string, string> = {};
 
         if (! selectedMovie) {
             newErrors.movie = 'Veuillez sélectionner un film';
+        }
+        if (selectedMovie && ! selectedMovie.runtime) {
+            newErrors.movie = 'La durée du film est requise pour calculer la fin de la séance';
+        }
+        if (! cinemaHallId) {
+            newErrors.hall = 'Veuillez sélectionner une salle';
         }
         if (! price || Number(price) <= 0) {
             newErrors.price = 'Le prix doit être supérieur à 0';
@@ -81,6 +110,9 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
         }
         if (! time) {
             newErrors.time = 'L\'heure est requise';
+        }
+        if (date && time && new Date(`${date}T${time}`) <= new Date()) {
+            newErrors.time = 'La séance doit commencer dans le futur';
         }
 
         setErrors(newErrors);
@@ -94,18 +126,24 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
             return;
         }
 
-        const formData: MovieFormData = {
+        const data: CreateCinemaScreeningPayload = {
+            movie: {
+                tmdb_id: selectedMovie.id,
+                title: selectedMovie.title,
+                overview: selectedMovie.overview || null,
+                poster: selectedMovie.poster_path || null,
+                runtime: selectedMovie.runtime ?? 0,
+                vote_average: selectedMovie.vote_average ?? 0,
+                genres: selectedMovie.genres?.map((genre) => genre.name) ?? [],
+            },
+            cinema_hall_id: cinemaHallId,
+            starts_at: `${date} ${time}`,
             price: Number(price),
-            date,
-            time,
-            hall,
             status,
         };
 
-        onSubmit(createMovieFromTMDB(selectedMovie, formData));
+        onSubmit(data);
     };
-
-    const today = new Date().toISOString().split('T')[0];
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -163,15 +201,18 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
                                 <MapPin size={14} className="text-slate-500" />
                                 Salle
                             </label>
-                            <Select value={hall} onChange={(e) => setHall(e.target.value)}>
-                                {hallOptions.length > 0 ?  (
-                                    hallOptions.map((h) => (
-                                        <option key={h} value={h}>{h}</option>
+                            <Select value={cinemaHallId} onChange={(e) => setCinemaHallId(Number(e.target.value))}>
+                                {halls.length > 0 ?  (
+                                    halls.map((hall) => (
+                                        <option key={hall.id} value={hall.id}>{hall.name}</option>
                                     ))
                                 ) : (
                                     <option value="">Aucune salle configurée</option>
                                 )}
                             </Select>
+                            {errors.hall && (
+                                <p className="text-xs text-rose-400">{errors.hall}</p>
+                            )}
                         </div>
                     </div>
 
@@ -216,7 +257,7 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
                             </label>
                             <Select
                                 value={status}
-                                onChange={(e) => setStatus(e.target.value as MovieStatus)}
+                                onChange={(e) => setStatus(e.target.value as "draft" | "active")}
                             >
                                 {STATUS_OPTIONS.map((opt) => (
                                     <option key={opt.value} value={opt.value}>

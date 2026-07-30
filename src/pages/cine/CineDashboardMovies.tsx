@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Plus } from "lucide-react";
+import axios from "axios";
 
 import DashboardHeader from "../../components/cine/dashboard/DashboardHeader";
 import DaySelector from "../../components/cine/dashboard/DaySelector";
@@ -12,14 +13,37 @@ import MovieForm from "../../components/cine/dashboard/modal/MovieForm";
 import DeleteMovieModal from "../../components/cine/dashboard/modal/DeleteMovieModal";
 import Button from "../../components/cine/ui/Button";
 
-import { useMovies } from "../../hooks/useMovies";
+import { useMyCinemaScreenings } from "../../hooks/useCinemas";
 import { useNotification } from "../../context/NotificationContext";
-import type { Movie } from "../../types/movie";
+import type { Movie, MovieStatus } from "../../types/movie";
+import type {
+    CreateCinemaScreeningPayload,
+    UpdateCinemaScreeningPayload,
+} from "../../types/cinema";
 
 import { formatDateLocal, getNext7Days } from "../../utils/date";
 
 interface OutletContext {
     openSidebar: () => void;
+}
+
+interface ApiErrorResponse {
+    message?: string;
+    errors?: Record<string, string[]>;
+}
+
+function getApiErrorMessage(error: unknown): string {
+    if (! axios.isAxiosError<ApiErrorResponse>(error)) {
+        return "Impossible d'ajouter cette séance.";
+    }
+
+    const validationMessage = Object.values(error.response?.data?.errors ?? {})
+        .flat()
+        .at(0);
+
+    return validationMessage
+        ?? error.response?.data?.message
+        ?? "Impossible d'ajouter cette séance.";
 }
 
 export default function CineDashboardMovies() {
@@ -34,18 +58,49 @@ export default function CineDashboardMovies() {
     const [movieToDelete, setMovieToDelete] = useState<Movie | null>(null);
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
+    const [search, setSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useState<"all" | MovieStatus>("all");
+
     const {
-        filteredMovies,
-        search,
-        setSearch,
-        statusFilter,
-        setStatusFilter,
-        addMovie,
-        updateMovie,
-        deleteMovie,
-        toggleStatus,
+        screenings,
+        addScreening,
+        updateScreening,
+        deleteScreening,
         isLoading,
-    } = useMovies(selectedDate);
+    } = useMyCinemaScreenings({ date: selectedDate });
+
+    const filteredMovies = useMemo<Movie[]>(() => {
+        return screenings
+            .map((screening): Movie => ({
+                _id: String(screening.id),
+                tmdbId: screening.movie.id ?? screening.movie._id ?? 0,
+                title: screening.movie.title,
+                overview: screening.movie.overview ?? undefined,
+                poster: screening.movie.poster ?? null,
+                runtime: screening.movie.runtime,
+                genres: screening.movie.genres,
+                voteAverage: screening.movie.voteAverage ?? 0,
+                status: screening.status === "draft"
+                    ? "draft"
+                    : screening.status === "active"
+                        ? "active"
+                        : "archived",
+                createdAt: "",
+                updatedAt: "",
+                price: Number(screening.price),
+                date: screening.startsAt.slice(0, 10),
+                time: screening.startsAt.slice(11, 16),
+                hall: screening.hall.name,
+            }))
+            .filter((movie) => {
+                const matchesSearch = movie.title
+                    .toLocaleLowerCase("fr-FR")
+                    .includes(search.trim().toLocaleLowerCase("fr-FR"));
+                const matchesStatus = statusFilter === "all" || movie.status === statusFilter;
+
+                return matchesSearch && matchesStatus;
+            });
+    }, [screenings, search, statusFilter]);
 
     const stats = useMemo(() => {
         const activeMovies = filteredMovies.filter(m => m.status === "active");
@@ -79,31 +134,61 @@ export default function CineDashboardMovies() {
         setActiveDropdown(null);
     };
 
-    const handleSubmitMovie = (data: Omit<Movie, "_id">) => {
-        if (editingMovie) {
-            updateMovie. mutate(
-                { id: editingMovie._id, data },
-                {
-                    onSuccess: () => {
-                        notifySuccess("Séance mise à jour", "Les modifications ont été enregistrées.");
-                        closeForm();
-                    },
-                    onError: () => {
-                        notifyError("Erreur", "Impossible de mettre à jour la séance.");
-                    },
-                }
-            );
-        } else {
-            addMovie.mutate(data, {
+    const handleSubmitMovie = (data: CreateCinemaScreeningPayload) => {
+        if (! editingMovie) {
+            addScreening.mutate(data, {
                 onSuccess: () => {
                     notifySuccess("Séance ajoutée", "La séance a été créée avec succès.");
                     closeForm();
                 },
-                onError: () => {
-                    notifyError("Erreur", "Impossible d'ajouter cette séance.");
+                onError: (error) => {
+                    notifyError("Erreur", getApiErrorMessage(error));
                 },
             });
+
+            return;
         }
+
+        const screening = screenings.find(
+            (item) => item.id === Number(editingMovie._id)
+        );
+
+        if (! screening) {
+            notifyError("Erreur", "La séance est introuvable.");
+            return;
+        }
+
+        const movieId = screening.movie.id
+            ?? screening.movie._id;
+
+        if (! movieId) {
+            notifyError("Erreur", "L'identifiant du film est introuvable.");
+            return;
+        }
+
+        const updateData: UpdateCinemaScreeningPayload = {
+            movie_id: movieId,
+            cinema_hall_id: data.cinema_hall_id,
+            starts_at: data.starts_at,
+            price: data.price,
+            status: data.status,
+        };
+
+        updateScreening.mutate(
+            {
+                id: screening.id,
+                data: updateData,
+            },
+            {
+                onSuccess: () => {
+                    notifySuccess("Séance modifiée", "Les modifications ont été enregistrées.");
+                    closeForm();
+                },
+                onError: (error) => {
+                    notifyError("Erreur", getApiErrorMessage(error));
+                },
+            }
+        );
     };
 
     const confirmDeleteMovie = () => {
@@ -111,15 +196,46 @@ export default function CineDashboardMovies() {
             return;
         }
 
-        deleteMovie.mutate(movieToDelete._id, {
-            onSuccess: () => {
-                notifySuccess("Séance supprimée", "La séance a été retirée.");
-                setMovieToDelete(null);
+        deleteScreening.mutate(
+            Number(movieToDelete._id),
+            {
+                onSuccess: () => {
+                    notifySuccess("Séance supprimée", "La séance a bien été supprimée.");
+                    setMovieToDelete(null);
+                },
+                onError: (error) => {
+                    notifyError("Erreur", getApiErrorMessage(error));
+                },
+            }
+        );
+    };
+
+    const handleToggleStatus = (movie: Movie) => {
+        const nextStatus = movie.status === "active"
+            ? "draft"
+            : "active";
+
+        updateScreening.mutate(
+            {
+                id: Number(movie._id),
+                data: {
+                    status: nextStatus,
+                },
             },
-            onError: () => {
-                notifyError("Erreur", "Impossible de supprimer la séance.");
-            },
-        });
+            {
+                onSuccess: () => {
+                    notifySuccess(
+                        "Statut modifié",
+                        nextStatus === "active"
+                            ? "La séance est maintenant active."
+                            : "La séance est maintenant en brouillon."
+                    );
+                },
+                onError: (error) => {
+                    notifyError("Erreur", getApiErrorMessage(error));
+                },
+            }
+        );
     };
 
     const closeForm = () => {
@@ -194,7 +310,7 @@ export default function CineDashboardMovies() {
                             activeDropdown={activeDropdown}
                             onDropdownToggle={(id) => setActiveDropdown(activeDropdown === id ?  null : id)}
                             onEdit={handleEditMovie}
-                            onToggleStatus={(movie) => toggleStatus. mutate(movie)}
+                            onToggleStatus={handleToggleStatus}
                             onDelete={handleDeleteMovie}
                             onAddClick={handleCreateMovie}
                         />
@@ -220,7 +336,10 @@ export default function CineDashboardMovies() {
                     initial={editingMovie ??  undefined}
                     onCancel={closeForm}
                     onSubmit={handleSubmitMovie}
-                    isLoading={addMovie.isPending || updateMovie.isPending}
+                    isLoading={
+                        addScreening.isPending
+                        || updateScreening.isPending
+                    }
                     defaultDate={selectedDate}
                 />
             </Modal>
