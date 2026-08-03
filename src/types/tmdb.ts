@@ -1,24 +1,25 @@
-// ============================================
-// TMDB API Types
-// ============================================
 export interface TMDBMovie {
-    id: number;
+    tmdbId: number;
     title: string;
-    original_title: string;
-    overview: string;
-    poster_path: string | null;
-    backdrop_path: string | null;
-    release_date: string;
-    vote_average: number;
-    vote_count: number;
-    genre_ids: number[];
-    runtime?: number;
-    genres?: { id: number; name: string }[];
+    originalTitle: string;
+    overview: string | null;
+    poster: string | null;
+    posterPath: string | null;
+    releaseDate: string | null;
+    voteAverage: number | null;
+    runtime: number | null;
+    genres: string[];
 }
 
 export interface TMDBSearchResult {
-    page: number;
-    results: TMDBMovie[];
-    total_pages: number;
-    total_results: number;
+    data: TMDBMovie[];
+    meta: {
+        page: number;
+        totalPages: number;
+        totalResults: number;
+    };
+}
+
+export interface TMDBMovieResponse {
+    data: TMDBMovie;
 }

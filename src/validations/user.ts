@@ -1,5 +1,4 @@
 import { z, type MyZodType } from "../config/defaultZod.ts";
-import { mongodbIdSchema } from "./elements.ts";
 import type { BasicUserI, LoginUserI, RegisterUserI, UserI } from "../types/user.ts";
 
 export const passwordSchema = z
@@ -64,7 +63,7 @@ export const basicUserSchema = z.object({
     phone:     z.string().nullish(),
 
     role:      z.enum(["client", "admin", "cine"]),
-    is_active: z.number(),
+    is_active: z.boolean(),
 
     created_at: z.string(),
     updated_at: z.string(),

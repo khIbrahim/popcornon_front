@@ -163,8 +163,8 @@ export default function DashboardSidebar({ isOpen, onClose }: Props) {
                     {isCollapsed ? (
                         <div className="flex flex-col items-center gap-2">
                             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-xs font-bold text-white">
-                                {user?.firstName?.[0]}
-                                {user?.lastName?.[0]}
+                                {user?.first_name?.[0]}
+                                {user?.last_name?.[0]}
                             </div>
                             <button
                                 onClick={handleLogout}

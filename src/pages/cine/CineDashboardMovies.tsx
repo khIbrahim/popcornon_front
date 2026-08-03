@@ -73,13 +73,24 @@ export default function CineDashboardMovies() {
         return screenings
             .map((screening): Movie => ({
                 _id: String(screening.id),
-                tmdbId: screening.movie.id ?? screening.movie._id ?? 0,
-                title: screening.movie.title,
-                overview: screening.movie.overview ?? undefined,
-                poster: screening.movie.poster ?? null,
-                runtime: screening.movie.runtime,
-                genres: screening.movie.genres,
-                voteAverage: screening.movie.voteAverage ?? 0,
+                tmdbId: screening.tmdbId
+                    ?? screening.movie?.id
+                    ?? screening.movie?._id
+                    ?? 0,
+                title: screening.title
+                    ?? screening.movie?.title
+                    ?? "Film sans titre",
+                overview: screening.movie?.overview ?? undefined,
+                poster: screening.poster
+                    ?? screening.movie?.poster
+                    ?? null,
+                runtime: screening.runtime
+                    ?? screening.movie?.runtime
+                    ?? undefined,
+                genres: screening.genres
+                    ?? screening.movie?.genres
+                    ?? [],
+                voteAverage: screening.movie?.voteAverage ?? 0,
                 status: screening.status === "draft"
                     ? "draft"
                     : screening.status === "active"
@@ -158,16 +169,8 @@ export default function CineDashboardMovies() {
             return;
         }
 
-        const movieId = screening.movie.id
-            ?? screening.movie._id;
-
-        if (! movieId) {
-            notifyError("Erreur", "L'identifiant du film est introuvable.");
-            return;
-        }
-
         const updateData: UpdateCinemaScreeningPayload = {
-            movie_id: movieId,
+            tmdb_id: data.tmdb_id,
             cinema_hall_id: data.cinema_hall_id,
             starts_at: data.starts_at,
             price: data.price,

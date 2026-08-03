@@ -74,7 +74,7 @@ export async function register({
                                  phone,
                                  acceptTerms,
                                  rememberMe,
-                               }: RegisterUserI) {
+                               }: RegisterUserI & { rememberMe?: boolean }) {
   try {
     const response = await axiosConfig.post("/register", {
       email,
@@ -102,15 +102,15 @@ export async function logout() {
   try {
     await axiosConfig.post("/logout");
 
-    sessionStorage.removeItem("token");
-    localStorage.removeItem("token");
-
     return {
       success: true,
       message: "Déconnexion réussie",
     };
   } catch (error: unknown) {
     return handleAuthError(error);
+  } finally {
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
   }
 }
 

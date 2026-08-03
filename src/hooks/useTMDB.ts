@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { tmdbService } from '../services/tmdb';
 import type { TMDBMovie } from '../types/tmdb.ts';
 
@@ -17,72 +17,58 @@ export function useTMDB() {
         error: null,
     });
 
-    const [genresMap, setGenresMap] = useState<Record<number, string>>({});
-
-    useEffect(() => {
-        tmdbService.getGenres().then(list => {
-            const map: Record<number, string> = {};
-            list.forEach(g => map[g.id] = g.name);
-            setGenresMap(map);
-        });
-    }, []);
-
     const search = useCallback(async (query: string) => {
         if (query.length < 2) {
-            setState(s => ({ ...s, results: [], error: null }));
+            setState(current => ({ ...current, results: [], error: null }));
             return;
         }
 
-        setState(s => ({ ...s, isLoading: true, error: null }));
+        setState(current => ({ ...current, isLoading: true, error: null }));
 
         try {
             const results = await tmdbService.searchMovies(query);
-            const mapped = results.map(m => ({
-                ...m,
-                genres: m.genre_ids?.map(id => ({ id, name: genresMap[id] })) ?? []
-            }));
-
-            setState(s => ({ ...s, results: mapped, isLoading: false }));
-        } catch (err) {
-            setState(s => ({
-                ...s,
+            setState(current => ({ ...current, results, isLoading: false }));
+        } catch (error) {
+            setState(current => ({
+                ...current,
                 results: [],
                 isLoading: false,
-                error: err instanceof Error ? err.message : 'Erreur',
+                error: error instanceof Error ? error.message : 'Erreur',
             }));
         }
     }, []);
 
     const selectMovie = useCallback(async (movie: TMDBMovie) => {
-        setState(s => ({ ...s, isLoading: true, error: null }));
+        setState(current => ({ ...current, isLoading: true, error: null }));
 
         try {
-            const details = await tmdbService.getMovieDetails(movie.id);
-
-            setState(s => ({
-                ...s,
+            const details = await tmdbService.getMovieDetails(movie.tmdbId);
+            setState(current => ({
+                ...current,
                 selected: details,
                 results: [],
-                isLoading: false
+                isLoading: false,
             }));
 
             return details;
-        } catch (err) {
-            console.error("Erreur getMovieDetails:", err);
-
-            setState(s => ({ ...s, isLoading: false, error: "Impossible de charger les détails" }));
+        } catch (error) {
+            console.error('Erreur getMovieDetails:', error);
+            setState(current => ({
+                ...current,
+                isLoading: false,
+                error: 'Impossible de charger les détails',
+            }));
 
             return movie;
         }
     }, []);
 
-
     const clearSelection = useCallback(() => {
-        setState(s => ({ ...s, selected: null, results: [] }));
+        setState(current => ({ ...current, selected: null, results: [] }));
     }, []);
 
     const clearResults = useCallback(() => {
-        setState(s => ({ ...s, results: [] }));
+        setState(current => ({ ...current, results: [] }));
     }, []);
 
     return {

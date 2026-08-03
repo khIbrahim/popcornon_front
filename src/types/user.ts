@@ -15,30 +15,28 @@ export interface RegisterUserI {
   phone?: string;
 
   acceptTerms: boolean;
-  rememberMe: boolean | undefined;
 }
 
 export interface BasicUserI {
-  id:                 string;
+  id:                 number;
 
   email:              string;
   first_name:         string;
   last_name:          string;
+  name:               string;
 
   phone?:             string;
 
-  role?:              string;
+  role:               "client" | "admin" | "cine";
 
-  is_active?:         boolean;
+  is_active:          boolean;
 
-  full_name?:         string;
   is_locked?:         boolean;
 
-  createdAt:          string;
-  updatedAt:          string;
+  created_at:          string;
+  updated_at:          string;
 }
 
 export interface UserI extends BasicUserI {
   passwordChangedAt?: string;
-  data: any;
 }

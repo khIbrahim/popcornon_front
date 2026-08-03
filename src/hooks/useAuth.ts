@@ -8,7 +8,7 @@ interface AuthContextType {
     isLoading: boolean;
     isLoggedIn: boolean;
     isAdmin: boolean;
-    refresh: () => Promise<void>;
+    refresh: () => Promise<UserI | null>;
     setUser: (user: UserI | null) => void;
     logout: () => Promise<void>;
 }
@@ -19,9 +19,9 @@ export function useAuth(): AuthContextType {
 
     const refresh = useCallback(async () => {
         try {
-            await dispatch(refreshAuth()).unwrap();
+            return await dispatch(refreshAuth()).unwrap();
         } catch {
-            //NOOP
+            return null;
         }
     }, [dispatch]);
 

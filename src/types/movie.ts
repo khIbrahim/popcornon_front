@@ -1,6 +1,6 @@
-import type {TMDBMovie} from "./tmdb.ts";
+import type { TMDBMovie } from './tmdb.ts';
 
-export type MovieStatus = "active" | "draft" | "archived";
+export type MovieStatus = 'active' | 'draft' | 'archived';
 
 export interface Movie {
     _id: string;
@@ -17,7 +17,6 @@ export interface Movie {
     status: MovieStatus;
     createdAt: string;
     updatedAt: string;
-
     price: number;
     date: string;
     time: string;
@@ -32,43 +31,42 @@ export interface MovieFormData {
     status: MovieStatus;
 }
 
-export function createMovieFromTMDB(movie: TMDBMovie, formData: MovieFormData): Omit<Movie, '_id'> {
+export function createMovieFromTMDB(
+    movie: TMDBMovie,
+    formData: MovieFormData,
+): Omit<Movie, '_id'> {
     return {
-        tmdb_id: movie. id,
+        tmdbId: movie.tmdbId,
         title: movie.title,
-        originalTitle: movie.original_title,
-        overview: movie.overview,
-        poster: movie.poster_path,
-        backdrop: movie.backdrop_path,
-        releaseDate: movie.release_date,
-        runtime: movie.runtime,
-        genres: movie. genres?.map(g => g.name) || [],
-        vote_average: movie.vote_average,
+        originalTitle: movie.originalTitle,
+        overview: movie.overview ?? undefined,
+        poster: movie.poster,
+        backdrop: null,
+        releaseDate: movie.releaseDate ?? undefined,
+        runtime: movie.runtime ?? undefined,
+        genres: movie.genres,
+        voteAverage: movie.voteAverage ?? undefined,
         status: formData.status,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        price: formData. price,
+        price: formData.price,
         date: formData.date,
         time: formData.time,
         hall: formData.hall,
     };
 }
 
-export function createTmdbFromMovie(
-    movie: Movie,
-): TMDBMovie {
+export function createTmdbFromMovie(movie: Movie): TMDBMovie {
     return {
-        id: movie.tmdbId,
+        tmdbId: movie.tmdbId,
         title: movie.title,
-        original_title: movie.originalTitle || "",
-        overview: movie.overview || "",
-        poster_path: movie.poster || null,
-        backdrop_path: movie.backdrop || null,
-        release_date: movie.releaseDate || "",
-        vote_average: movie.voteAverage || 0,
-        vote_count: 0,
-        genre_ids: [],
-        runtime: movie.runtime,
-        genres: movie.genres?.map((name, index) => ({id: index, name})) || [],
+        originalTitle: movie.originalTitle || '',
+        overview: movie.overview || null,
+        poster: movie.poster || null,
+        posterPath: movie.poster || null,
+        releaseDate: movie.releaseDate || null,
+        voteAverage: movie.voteAverage ?? null,
+        runtime: movie.runtime ?? null,
+        genres: movie.genres || [],
     };
 }

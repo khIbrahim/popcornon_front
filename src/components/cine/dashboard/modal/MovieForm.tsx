@@ -96,9 +96,6 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
         if (! selectedMovie) {
             newErrors.movie = 'Veuillez sélectionner un film';
         }
-        if (selectedMovie && ! selectedMovie.runtime) {
-            newErrors.movie = 'La durée du film est requise pour calculer la fin de la séance';
-        }
         if (! cinemaHallId) {
             newErrors.hall = 'Veuillez sélectionner une salle';
         }
@@ -127,17 +124,9 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
         }
 
         const data: CreateCinemaScreeningPayload = {
-            movie: {
-                tmdb_id: selectedMovie.id,
-                title: selectedMovie.title,
-                overview: selectedMovie.overview || null,
-                poster: selectedMovie.poster_path || null,
-                runtime: selectedMovie.runtime ?? 0,
-                vote_average: selectedMovie.vote_average ?? 0,
-                genres: selectedMovie.genres?.map((genre) => genre.name) ?? [],
-            },
-            cinema_hall_id: cinemaHallId,
-            starts_at: `${date} ${time}`,
+            tmdb_id: Number(selectedMovie.tmdbId),
+            cinema_hall_id: Number(cinemaHallId),
+            starts_at: `${date} ${time.slice(0, 5)}`,
             price: Number(price),
             status,
         };
@@ -281,19 +270,19 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
                             <div>
                                 <span className="text-slate-500">Note</span>
                                 <p className="text-yellow-400 font-medium">
-                                    ⭐ {selectedMovie.vote_average.toFixed(1)}
+                                    ⭐ {(selectedMovie.voteAverage ?? 0).toFixed(1)}
                                 </p>
                             </div>
                             <div>
                                 <span className="text-slate-500">Sortie</span>
                                 <p className="text-white font-medium">
-                                    {selectedMovie.release_date?.split('-')[0] || 'N/A'}
+                                    {selectedMovie.releaseDate?.split('-')[0] || 'N/A'}
                                 </p>
                             </div>
                             <div>
                                 <span className="text-slate-500">Genres</span>
                                 <p className="text-white font-medium truncate">
-                                    {selectedMovie.genres?.slice(0, 2).map(g => g.name).join(', ') || 'N/A'}
+                                    {selectedMovie.genres.slice(0, 2).join(', ') || 'N/A'}
                                 </p>
                             </div>
                         </div>

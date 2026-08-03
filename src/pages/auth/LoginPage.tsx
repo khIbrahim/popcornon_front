@@ -49,9 +49,16 @@ export default function LoginPage() {
             const res = await login({ email, password, rememberMe });
 
             if (res.success) {
-                notifySuccess("Connexion réussie !", "Ravi de vous revoir.");
-                await refresh();
-                navigate("/");
+                const authenticatedUser = await refresh();
+
+                if (authenticatedUser) {
+                    notifySuccess("Connexion réussie !", "Ravi de vous revoir.");
+                    navigate("/");
+                } else {
+                    const msg = "La session n'a pas pu être confirmée.";
+                    setError(msg);
+                    notifyError("Échec de connexion", msg);
+                }
             } else {
                 const msg = res.message || "Email ou mot de passe incorrect.";
                 setError(msg);

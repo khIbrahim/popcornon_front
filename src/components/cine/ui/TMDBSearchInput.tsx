@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, Star, Calendar, Loader2, Film, X } from 'lucide-react';
 import {useTMDB} from "../../../hooks/useTMDB.ts";
 import {useDebounce} from "../../../hooks/useDebounce.ts";
-import { getImageUrl } from '../../../services/tmdb.ts';
 import { cn } from '../../../utils/cn.ts';
 import type { TMDBMovie } from '../../../types/tmdb.ts';
 
@@ -53,9 +52,9 @@ export default function TMDBSearchInput({ value, onChange, error }: TMDBSearchIn
             <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-300">Film sélectionné</label>
                 <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700">
-                    {value.poster_path ? (
+                    {value.poster ? (
                         <img
-                            src={getImageUrl(value.poster_path, 'w92')!}
+                            src={value.poster}
                             alt={value.title}
                             className="w-12 h-[72px] rounded-lg object-cover"
                         />
@@ -67,21 +66,21 @@ export default function TMDBSearchInput({ value, onChange, error }: TMDBSearchIn
                     <div className="flex-1 min-w-0">
                         <p className="font-medium text-white truncate">{value.title}</p>
                         <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
-                            {value.release_date && (
+                            {value.releaseDate && (
                                 <span className="flex items-center gap-1">
                   <Calendar size={12} />
-                                    {value.release_date.split('-')[0]}
+                                    {value.releaseDate.split('-')[0]}
                 </span>
                             )}
                             <span className="flex items-center gap-1 text-yellow-400">
                 <Star size={12} className="fill-yellow-400" />
-                                {value.vote_average.toFixed(1)}
+                                {(value.voteAverage ?? 0).toFixed(1)}
               </span>
                             {value.runtime && <span>{value.runtime} min</span>}
                         </div>
                         {value.genres && value.genres.length > 0 && (
                             <p className="mt-1 text-xs text-slate-500 truncate">
-                                {value.genres.map(g => g.name).join(' • ')}
+                                {value.genres.join(' • ')}
                             </p>
                         )}
                     </div>
@@ -133,14 +132,14 @@ export default function TMDBSearchInput({ value, onChange, error }: TMDBSearchIn
                     <div className="max-h-72 overflow-y-auto">
                         {results.map((movie) => (
                             <button
-                                key={movie.id}
+                                key={movie.tmdbId}
                                 type="button"
                                 onClick={() => handleSelect(movie)}
                                 className="w-full flex items-center gap-3 p-3 hover:bg-slate-800 transition-colors border-b border-slate-800/50 last:border-0"
                             >
-                                {movie.poster_path ? (
+                                {movie.poster ? (
                                     <img
-                                        src={getImageUrl(movie.poster_path, 'w92')!}
+                                        src={movie.poster}
                                         alt={movie.title}
                                         className="w-10 h-[60px] rounded-lg object-cover shrink-0"
                                     />
@@ -152,10 +151,10 @@ export default function TMDBSearchInput({ value, onChange, error }: TMDBSearchIn
                                 <div className="flex-1 min-w-0 text-left">
                                     <p className="text-sm font-medium text-white truncate">{movie.title}</p>
                                     <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-400">
-                                        {movie.release_date && <span>{movie.release_date.split('-')[0]}</span>}
+                                        {movie.releaseDate && <span>{movie.releaseDate.split('-')[0]}</span>}
                                         <span className="flex items-center gap-0.5 text-yellow-400">
                       <Star size={10} className="fill-yellow-400" />
-                                            {movie.vote_average.toFixed(1)}
+                                            {(movie.voteAverage ?? 0).toFixed(1)}
                     </span>
                                     </div>
                                 </div>

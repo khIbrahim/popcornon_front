@@ -23,7 +23,6 @@ export default function LocationSettings() {
     }, [cinema]);
 
     const handleSave = async () => {
-        console.log("hello")
         setIsLoading(true);
 
         try {

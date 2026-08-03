@@ -120,7 +120,10 @@ export default function CinemaDrawer({
         const map = new Map<number, CinemaScreening[]>();
 
         screeningsForSelectedDate.forEach((screening) => {
-            const movieId = screening.movie.id ?? screening.movie._id ?? screening.id;
+            const movieId = screening.tmdbId
+                ?? screening.movie?.id
+                ?? screening.movie?._id
+                ?? screening.id;
 
             if (! map.has(movieId)) {
                 map.set(movieId, []);
@@ -421,7 +424,24 @@ export default function CinemaDrawer({
                                 <div className="space-y-4">
                                     {groupedByMovie.map((screeningsForMovie) => {
                                         const firstScreening = screeningsForMovie[0];
-                                        const movie = firstScreening.movie;
+                                        const movie = {
+                                            id: firstScreening.tmdbId
+                                                ?? firstScreening.movie?.id
+                                                ?? firstScreening.movie?._id
+                                                ?? firstScreening.id,
+                                            title: firstScreening.title
+                                                ?? firstScreening.movie?.title
+                                                ?? "Film sans titre",
+                                            poster: firstScreening.poster
+                                                ?? firstScreening.movie?.poster
+                                                ?? null,
+                                            runtime: firstScreening.runtime
+                                                ?? firstScreening.movie?.runtime
+                                                ?? null,
+                                            genres: firstScreening.genres
+                                                ?? firstScreening.movie?.genres
+                                                ?? [],
+                                        };
 
                                         return (
                                             <div
@@ -433,7 +453,7 @@ export default function CinemaDrawer({
                                                     <div className="w-20 h-28 rounded-lg overflow-hidden shrink-0 bg-white/5">
                                                         {movie.poster ? (
                                                             <img
-                                                                src={`https://image.tmdb.org/t/p/w200${movie.poster}`}
+                                                                src={movie.poster}
                                                                 alt={movie.title}
                                                                 className="w-full h-full object-cover"
                                                             />

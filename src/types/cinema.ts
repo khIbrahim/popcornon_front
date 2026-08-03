@@ -46,13 +46,20 @@ export interface CinemaScreeningHall {
 }
 
 export interface CinemaScreening {
-    id:       number;
-    startsAt: string;
-    endsAt:   string;
-    price:    string;
-    status:   CinemaScreeningStatus;
-    movie:    CinemaScreeningMovie;
-    hall:     CinemaScreeningHall;
+    id:           number;
+    cinemaId:     number;
+    cinemaHallId: number;
+    tmdbId:       number | null;
+    title:        string | null;
+    poster:       string | null;
+    runtime:      number | null;
+    genres:       string[];
+    startsAt:     string;
+    endsAt:       string;
+    price:        string;
+    status:       CinemaScreeningStatus;
+    hall:         CinemaScreeningHall;
+    movie?:       CinemaScreeningMovie;
 }
 
 export interface CinemaScreeningFilters {
@@ -113,26 +120,16 @@ export type ScreeningStatus =
     | "active"
     | "archived";
 
-export interface ScreeningMoviePayload {
-    tmdb_id:      number;
-    title:        string;
-    overview?:    string | null;
-    poster?:      string | null;
-    runtime:      number;
-    vote_average: number;
-    genres:       string[];
-}
-
 export interface CreateCinemaScreeningPayload {
-    movie:          ScreeningMoviePayload;
+    tmdb_id: number;
     cinema_hall_id: number;
-    starts_at:      string;
-    price:          number;
-    status:         "draft" | "active";
+    starts_at: string;
+    price: number;
+    status: "draft" | "active";
 }
 
 export interface UpdateCinemaScreeningPayload {
-    movie_id?:          number;
+    tmdb_id?:           number;
     cinema_hall_id?:    number;
     starts_at?:         string;
     price?:             number;
