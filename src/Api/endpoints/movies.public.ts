@@ -72,11 +72,13 @@ export async function getPublicMovies(filters?: {
 }): Promise<MoviesResponse> {
     const date = filters?.date ?? new Date().toISOString().slice(0, 10);
 
-    const res = await axiosConfig.get<MoviesResponse>("/screenings/program", {
-        params: {
-            date,
-        },
-    });
+    const res = await axiosConfig.get<MoviesResponse>(
+        "/screenings/program",
+        {
+            params: {date, genre: filters?.genre && filters.genre !== "Tous" ? filters.genre : undefined,
+            },
+        }
+    );
 
     return res.data;
 }
