@@ -8,8 +8,8 @@ export type DayKey =
     | "sunday";
 
 export interface DayHours {
-    open: string;
-    close: string;
+    open:   string;
+    close:  string;
     closed: boolean;
 }
 

@@ -17,6 +17,7 @@ import type {
     Cinema,
     CinemaScreening,
 } from "../../types/cinema.ts";
+import type { DayKey } from "../../types/openingHours.ts";
 
 import {
     formatDateLocal,
@@ -53,6 +54,16 @@ const MONTHS_FR = [
     "Oct",
     "Nov",
     "Déc",
+];
+
+const DAY_KEYS: DayKey[] = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
 ];
 
 function isSameDay(a: Date, b: Date) {
@@ -94,6 +105,24 @@ export default function CinemaDrawer({
         cinema.id,
         { from, to }
     );
+
+    const [year, month, day] = selectedDate
+        .split("-")
+        .map(Number);
+
+    const selectedDayKey = DAY_KEYS[
+        new Date(year, month - 1, day).getDay()
+        ];
+
+    const selectedOpeningHours = cinema.opening_hours?.[
+        selectedDayKey
+        ];
+
+    const openingHoursText = ! selectedOpeningHours
+        ? "Horaires non renseignés"
+        : selectedOpeningHours.closed
+            ? "Fermé"
+            : `Ouvert : ${selectedOpeningHours.open} – ${selectedOpeningHours.close}`;
 
     const screeningsByDate = useMemo(() => {
         const map = new Map<string, CinemaScreening[]>();
@@ -253,7 +282,7 @@ export default function CinemaDrawer({
                                 />
 
                                 <p className="text-sm text-slate-400">
-                                    Consultez les horaires du jour dans le programme
+                                    {openingHoursText}
                                 </p>
                             </div>
                         </div>
