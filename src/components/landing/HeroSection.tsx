@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { MapPin, Search, Sparkles, Film, Building2, X, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSearch } from "../../hooks/useSearch";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Props {
     onRequestLocation: () => void;
@@ -15,7 +16,8 @@ export default function HeroSection({ onRequestLocation }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const { results, isLoading } = useSearch(query);
+    const debouncedQuery = useDebounce(query, 300);
+    const { results, isLoading } = useSearch(debouncedQuery);
 
     // Fermer dropdown au clic extérieur
     useEffect(() => {
@@ -47,7 +49,7 @@ export default function HeroSection({ onRequestLocation }: Props) {
     const showDropdown = isFocused && query.length >= 2;
 
     return (
-        <section className="relative min-h-screen flex flex-col justify-center items-center px-4 overflow-hidden">
+        <section className="relative min-h-screen flex flex-col justify-center items-center px-4">
             {/* BACKGROUND FX */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-transparent to-orange-600/10" />
@@ -157,12 +159,12 @@ export default function HeroSection({ onRequestLocation }: Props) {
                                             </div>
                                             {results.movies.map((movie) => (
                                                 <button
-                                                    key={movie._id}
-                                                    onClick={() => handleSelectMovie(movie._id)}
+                                                    key={movie.tmdb_id}
+                                                    onClick={() => handleSelectMovie(String(movie.tmdb_id))}
                                                     className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors text-left"
                                                 >
                                                     <img
-                                                        src={movie.poster ?  `https://image.tmdb.org/t/p/w92${movie.poster}` : "/placeholder. jpg"}
+                                                        src={movie.poster ? movie.poster.startsWith("http") ? movie.poster : `https://image.tmdb.org/t/p/w92${movie.poster}` : "/placeholder.jpg"}
                                                         alt={movie.title}
                                                         className="w-10 h-14 rounded-lg object-cover"
                                                     />
@@ -189,8 +191,8 @@ export default function HeroSection({ onRequestLocation }: Props) {
                                             </div>
                                             {results. cinemas.map((cinema) => (
                                                 <button
-                                                    key={cinema._id}
-                                                    onClick={() => handleSelectCinema(cinema._id)}
+                                                    key={cinema.id}
+                                                    onClick={() => handleSelectCinema(String(cinema.id))}
                                                     className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors text-left"
                                                 >
                                                     <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">

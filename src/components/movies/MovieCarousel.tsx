@@ -188,7 +188,7 @@ export default function MovieCarousel({
                             >
                                 {movies.map((movie, idx) => (
                                     <motion.div
-                                        key={movie._id}
+                                        key={movie.tmdb_id}
                                         className="flex-shrink-0"
                                         style={{ width: `calc(${100 / visibleCount}% - ${(visibleCount - 1) * 20 / visibleCount}px)` }}
                                         initial={{ opacity: 0, scale: 0.9 }}

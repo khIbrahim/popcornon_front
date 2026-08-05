@@ -1,16 +1,23 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { searchAll } from "../Api/endpoints/search";
 
 export function useSearch(query: string) {
-    const { data, isLoading } = useQuery({
-        queryKey: ["search", query],
-        queryFn: () => searchAll(query),
-        enabled: query.length >= 2,
+    const normalizedQuery = query.trim();
+
+    const searchQuery = useQuery({
+        queryKey: ["home-search", normalizedQuery],
+        queryFn: () => searchAll(normalizedQuery),
+        enabled: normalizedQuery.length >= 2,
         staleTime: 1000 * 60,
+        gcTime: 1000 * 60 * 5,
+        placeholderData: keepPreviousData,
     });
 
     return {
-        results: data ??  { movies: [], cinemas: [] },
-        isLoading,
+        results: searchQuery.data ?? {
+            movies: [],
+            cinemas: [],
+        },
+        isLoading: searchQuery.isFetching,
     };
 }
