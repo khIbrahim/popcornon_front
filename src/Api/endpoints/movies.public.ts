@@ -1,22 +1,45 @@
 import axiosConfig from "../config";
 
+export interface ProgramScreening {
+    id: number;
+    starts_at: string;
+    ends_at: string;
+    price: string;
+    cinema: {
+        id: number;
+        name: string;
+        city: string;
+        wilaya: string;
+    };
+    hall: {
+        id: number;
+        name: string;
+        type: string;
+    };
+}
+
 export interface PublicMovie {
-    _id: string;
-    tmdbId: number;
+    tmdb_id: number;
     title: string;
-    poster: string;
-    backdrop: string;
-    runtime: number;
-    voteAverage: number;
+    poster: string | null;
+    runtime: number | null;
     genres: string[];
-    releaseDate: string;
-    overview: string;
+    screenings: ProgramScreening[];
+
+    // Champs optionnels conservés pour les composants publics existants.
+    _id?: string;
+    tmdbId?: number;
+    backdrop?: string | null;
+    voteAverage?: number | null;
+    releaseDate?: string | null;
+    overview?: string | null;
     price?: number;
     time?: string;
     hall?: string;
     date?: string;
 }
 
+// Ancien contrat conservé : il est encore utilisé par useMovieDetail().
 export interface MovieScreening {
     _id: string;
     cinema: {
@@ -33,7 +56,6 @@ export interface MovieScreening {
 
 interface MoviesResponse {
     success: boolean;
-    count: number;
     data: PublicMovie[];
 }
 
@@ -48,16 +70,19 @@ export async function getPublicMovies(filters?: {
     wilaya?: string;
     date?: string;
 }): Promise<MoviesResponse> {
-    const params = new URLSearchParams();
-    if (filters?.genre) params.append("genre", filters.genre);
-    if (filters?.wilaya) params.append("wilaya", filters.wilaya);
-    if (filters?.date) params.append("date", filters.date);
+    const date = filters?.date ?? new Date().toISOString().slice(0, 10);
 
-    const res = await axiosConfig.get<MoviesResponse>(`/public/movies?${params}`);
-    return res. data;
+    const res = await axiosConfig.get<MoviesResponse>("/screenings/program", {
+        params: {
+            date,
+        },
+    });
+
+    return res.data;
 }
 
 export async function getMovieWithScreenings(movieId: string): Promise<MovieDetailResponse> {
-    const res = await axiosConfig. get<MovieDetailResponse>(`/public/movies/${movieId}`);
+    const res = await axiosConfig.get<MovieDetailResponse>(`/public/movies/${movieId}`);
+
     return res.data;
 }

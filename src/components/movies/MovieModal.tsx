@@ -1,5 +1,4 @@
 import { X, Star, Clock, Calendar, MapPin, Ticket } from "lucide-react";
-import { useMovieDetail } from "../../hooks/usePublicMovies";
 import type { PublicMovie } from "../../Api/endpoints/movies.public";
 import { useState } from "react";
 
@@ -9,35 +8,44 @@ interface Props {
 }
 
 export default function MovieModal({ movie, onClose }: Props) {
-    const { data, isLoading } = useMovieDetail(movie._id);
-    console.log('Movie detail data:', data);
+    const screenings = movie.screenings ?? [];
+    const [selectedScreening, setSelectedScreening] = useState<number | null>(null);
 
-    const screenings = data?.screenings ?? [];
-    console.log('Screenings:', screenings);
-    const [selectedScreening, setSelectedScreening] = useState<string | null>(null);
+    const backdropUrl = movie.backdrop
+        ? `https://image.tmdb.org/t/p/w1280${movie.backdrop}`
+        : null;
+    const posterUrl = movie.poster
+        ? `https://image.tmdb.org/t/p/w400${movie.poster}`
+        : "/placeholder-movie.jpg";
 
-    const backdropUrl = movie. backdrop ? `https://image.tmdb.org/t/p/w1280${movie.backdrop}` : null;
-    const posterUrl = movie.poster ? `https://image.tmdb.org/t/p/w400${movie.poster}` : "/placeholder-movie.jpg";
+    const groupedByCinema = screenings.reduce((acc, screening) => {
+        const key = screening.cinema.id;
 
-    const groupedByCinema = screenings.reduce((acc, s) => {
-        const key = s.cinema._id;
-        if (! acc[key]) {
-            acc[key] = {cinema: s.cinema, times: []};
+        if (!acc[key]) {
+            acc[key] = {
+                cinema: screening.cinema,
+                times: [],
+            };
         }
 
-        acc[key].times.push(s);
+        acc[key].times.push(screening);
 
         return acc;
-    }, {} as Record<string, { cinema: typeof screenings[0]["cinema"]; times: typeof screenings }>);
+    }, {} as Record<
+        number,
+        {
+            cinema: (typeof screenings)[number]["cinema"];
+            times: typeof screenings;
+        }
+    >);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
             <div className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl bg-[#0a0a0f] border border-white/10">
-                {/* Header */}
                 <div className="relative h-56">
-                    {backdropUrl ?  (
+                    {backdropUrl ? (
                         <img src={backdropUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-red-500/20 to-transparent" />
@@ -51,11 +59,10 @@ export default function MovieModal({ movie, onClose }: Props) {
                         <X size={20} />
                     </button>
 
-                    {/* Movie info */}
                     <div className="absolute bottom-4 left-4 right-4 flex gap-4">
                         <img
                             src={posterUrl}
-                            alt={movie. title}
+                            alt={movie.title}
                             className="w-24 h-36 rounded-lg object-cover shadow-lg hidden sm:block"
                         />
                         <div className="flex-1">
@@ -71,13 +78,13 @@ export default function MovieModal({ movie, onClose }: Props) {
                                 </span>
                                 <span className="flex items-center gap-1">
                                     <Calendar size={14} />
-                                    {movie.releaseDate?. split("-")[0]}
+                                    {movie.releaseDate?.split("-")[0]}
                                 </span>
                             </div>
                             <div className="flex flex-wrap gap-1 mt-2">
-                                {movie. genres?.slice(0, 3).map((g) => (
-                                    <span key={g} className="px-2 py-0.5 rounded-md bg-white/10 text-xs text-slate-300">
-                                        {g}
+                                {movie.genres.slice(0, 3).map((genre) => (
+                                    <span key={genre} className="px-2 py-0.5 rounded-md bg-white/10 text-xs text-slate-300">
+                                        {genre}
                                     </span>
                                 ))}
                             </div>
@@ -85,9 +92,7 @@ export default function MovieModal({ movie, onClose }: Props) {
                     </div>
                 </div>
 
-                {/* Content */}
                 <div className="p-6 overflow-y-auto max-h-[50vh]">
-                    {/* Synopsis */}
                     {movie.overview && (
                         <div className="mb-6">
                             <h3 className="text-sm font-semibold text-white mb-2">Synopsis</h3>
@@ -95,26 +100,16 @@ export default function MovieModal({ movie, onClose }: Props) {
                         </div>
                     )}
 
-                    {/* Séances */}
                     <div>
                         <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
                             <Ticket size={16} className="text-red-500" />
                             Séances disponibles
                         </h3>
 
-                        {isLoading ? (
-                            <div className="space-y-3">
-                                {[1, 2]. map((i) => (
-                                    <div key={i} className="p-4 rounded-xl bg-white/[0.02] animate-pulse">
-                                        <div className="h-4 bg-white/5 rounded w-1/3 mb-2" />
-                                        <div className="h-3 bg-white/5 rounded w-1/4" />
-                                    </div>
-                                ))}
-                            </div>
-                        ) : Object.keys(groupedByCinema).length > 0 ? (
+                        {Object.keys(groupedByCinema).length > 0 ? (
                             <div className="space-y-3">
                                 {Object.values(groupedByCinema).map(({ cinema, times }) => (
-                                    <div key={cinema._id} className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                                    <div key={cinema.id} className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
                                         <div className="flex items-start justify-between mb-3">
                                             <div>
                                                 <h4 className="font-medium text-white">{cinema.name}</h4>
@@ -125,19 +120,24 @@ export default function MovieModal({ movie, onClose }: Props) {
                                             </div>
                                         </div>
                                         <div className="flex flex-wrap gap-2">
-                                            {times.map((s) => (
+                                            {times.map((screening) => (
                                                 <button
-                                                    key={s._id}
-                                                    onClick={() => setSelectedScreening(s._id)}
+                                                    key={screening.id}
+                                                    onClick={() => setSelectedScreening(screening.id)}
                                                     className={`px-3 py-2 rounded-lg border transition-all ${
-                                                        selectedScreening === s._id
-                                                            ? 'bg-red-500/20 border-red-500 cursor-pointer'
-                                                            : 'bg-white/5 border-white/10 hover:border-red-500/50 hover:bg-red-500/10 cursor-pointer'
+                                                        selectedScreening === screening.id
+                                                            ? "bg-red-500/20 border-red-500 cursor-pointer"
+                                                            : "bg-white/5 border-white/10 hover:border-red-500/50 hover:bg-red-500/10 cursor-pointer"
                                                     }`}
                                                 >
-                                                    <span className="text-sm font-semibold text-white">{s.time}</span>
+                                                    <span className="text-sm font-semibold text-white">
+                                                        {new Date(screening.starts_at).toLocaleTimeString("fr-FR", {
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                        })}
+                                                    </span>
                                                     <div className="text-[10px] text-slate-500 mt-0.5">
-                                                        {s.hall} • {s.price} DA
+                                                        {screening.hall.name} • {Number(screening.price)} DA
                                                     </div>
                                                 </button>
                                             ))}
@@ -152,7 +152,6 @@ export default function MovieModal({ movie, onClose }: Props) {
                         )}
                     </div>
 
-                    {/* Price & Reserve */}
                     <div className="flex items-center justify-between pt-4 border-t border-white/5">
                         <button
                             onClick={() => alert("🎬 Réservation bientôt disponible !\n\nCette fonctionnalité arrive très prochainement.")}
