@@ -3,9 +3,9 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { X, MapPin, Navigation, ChevronRight, Users, LayoutGrid } from "lucide-react";
 import L from "leaflet";
 import type { UserLocation } from "../../types/geolocation";
-import {usePublicCinemaById, usePublicCinemas} from "../../hooks/usePublicCinemas.ts";
-import type {PublicCinema} from "../../types/publicCinema.ts";
-import PublicCinemaDrawer from "../cinemas/PublicCinemaDrawer.tsx";
+import { useCinemas } from "../../hooks/useCinemas";
+import type { Cinema } from "../../types/cinema.ts";
+import CinemaDrawer from "../cinemas/CinemaDrawer.tsx";
 import {ICONS} from "../../types/geolocation"
 
 interface Props {
@@ -44,12 +44,9 @@ function MapBounds({ bounds }: { bounds: L.LatLngBoundsExpression }) {
 }
 
 export default function CinemasNearby({ userLocation, onClose }: Props) {
-    const { data, isLoading }                 = usePublicCinemas();
-    const [selectedCinema, setSelectedCinema] = useState<PublicCinema | null>(null);
-    const {screenings}                        = usePublicCinemaById(selectedCinema !== null ? selectedCinema._id : undefined);
-    const [hoveredCinema, setHoveredCinema]   = useState<string | null>(null);
-
-    const cinemas = data ?? [];
+    const {data: cinemas, isLoading,}         = useCinemas({perPage: 100,});
+    const [selectedCinema, setSelectedCinema] =useState<Cinema | null>(null);
+    const [hoveredCinema, setHoveredCinema]   = useState<number | null>(null);
 
     const cinemasWithDistance = useMemo(() => {
         return cinemas
@@ -66,7 +63,6 @@ export default function CinemasNearby({ userLocation, onClose }: Props) {
             .sort((a, b) => a.distance - b. distance);
     }, [cinemas, userLocation]);
 
-    console.log(cinemasWithDistance);
 
     const mapBounds = useMemo(() => {
         if (cinemasWithDistance.length === 0) return null;
@@ -160,7 +156,7 @@ export default function CinemasNearby({ userLocation, onClose }: Props) {
                                         .filter(c => c.location?.coordinates && c.location.coordinates.length === 2)
                                         .map((cinema) => (
                                         <Marker
-                                            key={cinema._id}
+                                            key={cinema.id}
                                             position={[
                                                 cinema. location!.coordinates[1],
                                                 cinema.location! .coordinates[0],
@@ -168,7 +164,7 @@ export default function CinemasNearby({ userLocation, onClose }: Props) {
                                             icon={CINEMA_ICON}
                                             eventHandlers={{
                                                 click: () => setSelectedCinema(cinema),
-                                                mouseover: () => setHoveredCinema(cinema._id),
+                                                mouseover: () => setHoveredCinema(cinema.id),
                                                 mouseout: () => setHoveredCinema(null),
                                             }}
                                         >
@@ -196,12 +192,12 @@ export default function CinemasNearby({ userLocation, onClose }: Props) {
                             ) : cinemasWithDistance. length > 0 ? (
                                 cinemasWithDistance.map((cinema) => (
                                     <button
-                                        key={cinema._id}
+                                        key={cinema.id}
                                         onClick={() => setSelectedCinema(cinema)}
-                                        onMouseEnter={() => setHoveredCinema(cinema._id)}
+                                        onMouseEnter={() => setHoveredCinema(cinema.id)}
                                         onMouseLeave={() => setHoveredCinema(null)}
                                         className={`w-full text-left p-4 rounded-xl border transition-all ${
-                                            hoveredCinema === cinema._id
+                                            hoveredCinema === cinema.id
                                                 ? "bg-red-500/10 border-red-500/30"
                                                 : "bg-white/[0.02] border-white/5 hover:bg-white/[0.04]"
                                         }`}
@@ -249,12 +245,11 @@ export default function CinemasNearby({ userLocation, onClose }: Props) {
 
             {/* Cinema Modal */}
             {selectedCinema && (
-                <PublicCinemaDrawer
-                    cinema={selectedCinema}
-                    onClose={() => setSelectedCinema(null)}
-                    screenings={screenings}
-                />
-            )}
+            <CinemaDrawer
+                cinema={selectedCinema}
+                onClose={() => setSelectedCinema(null)}
+            />
+        )}
         </>
     );
 }

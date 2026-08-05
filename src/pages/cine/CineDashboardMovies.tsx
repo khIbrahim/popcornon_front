@@ -90,7 +90,9 @@ export default function CineDashboardMovies() {
                 genres: screening.genres
                     ?? screening.movie?.genres
                     ?? [],
-                voteAverage: screening.movie?.voteAverage ?? 0,
+                voteAverage: screening.voteAverage
+                    ?? screening.movie?.voteAverage
+                    ?? undefined,
                 status: screening.status === "draft"
                     ? "draft"
                     : screening.status === "active"

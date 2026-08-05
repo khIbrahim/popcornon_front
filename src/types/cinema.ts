@@ -53,6 +53,7 @@ export interface CinemaScreening {
     title:        string | null;
     poster:       string | null;
     runtime:      number | null;
+    voteAverage:  number | null;
     genres:       string[];
     startsAt:     string;
     endsAt:       string;

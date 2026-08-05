@@ -530,7 +530,10 @@ export default function CinemaDrawer({
                                                                     className="group px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-red-500/60 hover:bg-red-500/10 transition-all"
                                                                 >
                                                                     <span className="text-sm font-semibold text-white group-hover:text-red-400">
-                                                                        {screening.startsAt.slice(11, 16)}
+                                                                        {new Date(screening.startsAt).toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+})}
                                                                     </span>
 
                                                                     <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">

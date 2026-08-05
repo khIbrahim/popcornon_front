@@ -23,6 +23,7 @@ export interface PublicMovie {
     title: string;
     poster: string | null;
     runtime: number | null;
+    voteAverage: number | null;
     genres: string[];
     screenings: ProgramScreening[];
 
@@ -30,7 +31,6 @@ export interface PublicMovie {
     _id?: string;
     tmdbId?: number;
     backdrop?: string | null;
-    voteAverage?: number | null;
     releaseDate?: string | null;
     overview?: string | null;
     price?: number;

@@ -69,8 +69,6 @@ const MovieForm = ({ initial, onCancel, onSubmit, isLoading, defaultDate }: Movi
                 : "draft"
         );
 
-        console.log('Date originale :', initial.date);
-        console.log('Date input :', formatDateForInput(initial.date));
     }, [initial]);
 
     useEffect(() => {
