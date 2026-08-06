@@ -30,7 +30,9 @@ export default function MovieCard({ movie, onClick }: Props) {
             <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm">
                 <Star size={12} className="text-yellow-500 fill-yellow-500" />
                 <span className="text-xs font-semibold">
-                    {movie.voteAverage?.toFixed(1) ?? "—"}
+                    {movie.voteAverage && movie.voteAverage > 0
+                        ? movie.voteAverage.toFixed(1)
+                        : "Pas encore noté"}
                 </span>
             </div>
 

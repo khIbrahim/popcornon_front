@@ -70,7 +70,9 @@ export default function MovieModal({ movie, onClose }: Props) {
                             <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-slate-300">
                                 <span className="flex items-center gap-1">
                                     <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                                    {movie.voteAverage?.toFixed(1) ?? "—"}
+                                    {movie.voteAverage && movie.voteAverage > 0
+                                        ? movie.voteAverage.toFixed(1)
+                                        : "Pas encore noté"}
                                 </span>
                                 <span className="flex items-center gap-1">
                                     <Clock size={14} />
